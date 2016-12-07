@@ -5,18 +5,19 @@
   },
 
   "dependencies": {
-    "Microsoft.NETCore.App": {
-      "type": "platform",
-      "version": "1.0.1"
-    },
-    "Slalom.Stacks.Data.EntityFramework": "1.0.0",
     "Microsoft.EntityFrameworkCore": "1.1.0",
     "Microsoft.EntityFrameworkCore.Design": "1.1.0",
     "Microsoft.EntityFrameworkCore.SqlServer": "1.1.0",
-    "Slalom.Stacks": "1.0.9" },
+    "Microsoft.NETCore.App": {
+      "type": "platform",
+      "version": "1.1.0"
+    },
+    "Slalom.Stacks": "1.0.17",
+    "Slalom.Stacks.Data.EntityFramework": "1.0.1-*"
+  },
 
   "tools": {
-    "Microsoft.EntityFrameworkCore.Tools.DotNet": "1.1.0-preview3-final"
+    "Microsoft.EntityFrameworkCore.Tools.DotNet": "1.1.0-preview4-final"
   },
 
   "frameworks": {

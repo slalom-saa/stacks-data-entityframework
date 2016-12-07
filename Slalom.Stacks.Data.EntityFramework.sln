@@ -8,8 +8,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3255A589-24FC-49BE-9290-494D801236D7}"
 	ProjectSection(SolutionItems) = preProject
 		global.json = global.json
-		Slalom.ruleset = Slalom.ruleset
-		stylecop.json = stylecop.json
+		assets\stacks.ruleset = assets\stacks.ruleset
+		assets\stylecop.json = assets\stylecop.json
 	EndProjectSection
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Slalom.Stacks.Data.EntityFramework", "src\Slalom.Stacks.Data.EntityFramework\Slalom.Stacks.Data.EntityFramework.xproj", "{C8127D66-A3FD-4F94-8DFE-394542A121E0}"

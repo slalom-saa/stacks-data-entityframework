@@ -26,9 +26,10 @@ namespace ConsoleClient
                 {
                     container.RegisterModule(new EntityFrameworkSearchModule(c =>
                     {
-                        c.WithResult<ItemSearchResult>();
+                        c.UseSearchResult<ItemSearchResult>();
                     }));
-                    container.Register<ISearchIndexer<ItemSearchResult>>(c => new ItemSearchResultIndexer(c.Resolve<EntityFrameworkSearchContext>()));
+
+                     container.Register<ISearchIndexer<ItemSearchResult>>(c => new ItemSearchResultIndexer(c.Resolve<SearchContext>()));
 
                     await container.Search.AddAsync(new ItemSearchResult());
 

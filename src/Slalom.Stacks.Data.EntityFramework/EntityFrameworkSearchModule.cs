@@ -1,41 +1,57 @@
 ﻿using System;
 using Autofac;
 using Slalom.Stacks.Search;
+using Slalom.Stacks.Validation;
 
 namespace Slalom.Stacks.Data.EntityFramework
 {
+    /// <summary>
+    /// An Autofac module for configuring the Entity Framework Search module.
+    /// </summary>
+    /// <seealso cref="Autofac.Module" />
     public class EntityFrameworkSearchModule : Module
     {
-        private readonly EntityFrameworkSearchOptions _options = new EntityFrameworkSearchOptions();
+        private readonly SearchOptions _options = new SearchOptions();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EntityFrameworkSearchModule"/> class.
+        /// </summary>
         public EntityFrameworkSearchModule()
         {
         }
 
-        public EntityFrameworkSearchModule(Action<EntityFrameworkSearchOptions> configuration)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EntityFrameworkSearchModule"/> class.
+        /// </summary>
+        /// <param name="configuration">The configuration routine.</param>
+        public EntityFrameworkSearchModule(Action<SearchOptions> configuration)
         {
+            Argument.NotNull(() => configuration);
+
             configuration(_options);
         }
 
+        /// <summary>
+        /// Override to add registrations to the container.
+        /// </summary>
+        /// <param name="builder">The builder through which components can be
+        /// registered.</param>
+        /// <remarks>Note that the ContainerBuilder parameter is unique to this module.</remarks>
         protected override void Load(ContainerBuilder builder)
         {
             base.Load(builder);
 
-            builder.Register(c =>
-            {
-                var context = new SearchDbContext(_options);
-                context.EnsureMigrations();
-                return context;
-            }).SingleInstance();
-
-            builder.Register(c => new EntityFrameworkSearchContext(c.Resolve<SearchDbContext>()))
+            builder.Register(c => new SearchContext(_options))
                    .AsSelf()
                    .As<ISearchContext>()
-                   .SingleInstance();
+                   .SingleInstance().OnActivated(e =>
+                   {
+                       e.Instance.EnsureMigrations();
+                   });
 
             foreach (var type in _options.ResultTypes)
             {
-                builder.Register(c => Activator.CreateInstance(typeof(SearchIndexer<>).MakeGenericType(type), c.Resolve<EntityFrameworkSearchContext>()))
+                builder.Register(c => Activator.CreateInstance(typeof(SearchIndexer<>).MakeGenericType(type), c.Resolve<SearchContext>()))
                        .As(typeof(ISearchIndexer<>).MakeGenericType(type));
             }
         }

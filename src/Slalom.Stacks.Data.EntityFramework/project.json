@@ -11,12 +11,12 @@
     "Microsoft.EntityFrameworkCore": "1.1.0",
     "Microsoft.EntityFrameworkCore.Relational": "1.1.0",
     "Microsoft.EntityFrameworkCore.SqlServer": "1.1.0",
-    "NETStandard.Library": "1.6.0",
-    "Slalom.Stacks": "1.0.9"
+    "NETStandard.Library": "1.6.1",
+    "Slalom.Stacks": "1.0.17"
   },
 
   "buildOptions": {
-    "additionalArguments": [ "/ruleset:../../Slalom.ruleset", "/additionalfile:../../stylecop.json" ],
+    "additionalArguments": [ "/ruleset:../../assets/stacks.ruleset", "/additionalfile:../../assets/stylecop.json" ],
     "xmlDoc": true
   },
 
