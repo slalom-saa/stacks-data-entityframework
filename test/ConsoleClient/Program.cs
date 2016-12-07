@@ -1,43 +1,16 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Slalom.Stacks.Configuration;
 using Slalom.Stacks.Data.EntityFramework;
 using Slalom.Stacks.Search;
-
+#pragma warning disable 1998
 #pragma warning disable 4014
 
 namespace ConsoleClient
 {
     public class Program
     {
-        private Context context;
-
-        public class Item : ISearchResult
-        {
-            public int Id { get; set; }
-        }
-
-        public class Context : DbContext
-        {
-            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            {
-                base.OnConfiguring(optionsBuilder);
-
-                optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=Search;Integrated Security=True");
-            }
-
-            protected override void OnModelCreating(ModelBuilder modelBuilder)
-            {
-                base.OnModelCreating(modelBuilder);
-
-                modelBuilder.Entity<Item>()
-                            .ToTable("Items")
-                            .HasKey(e => e.Id);
-            }
-        }
-
         public static void Main(string[] args)
         {
             new Program().Run();
@@ -51,17 +24,17 @@ namespace ConsoleClient
             {
                 using (var container = new ApplicationContainer(this))
                 {
-                    container.Register(c => new Context());
+                    container.RegisterModule(new EntityFrameworkSearchModule(c =>
+                    {
+                        c.WithResult<ItemSearchResult>();
+                    }));
+                    container.Register<ISearchIndexer<ItemSearchResult>>(c => new ItemSearchResultIndexer(c.Resolve<EntityFrameworkSearchContext>()));
 
-                    context = container.Resolve<Context>();
+                    await container.Search.AddAsync(new ItemSearchResult());
 
-                    await context.EnsureMigrationsAsync();
+                    var search = container.Search.CreateQuery<ItemSearchResult>();
 
-                    container.Register(c => new EntityFrameworkSearchContext(c.Resolve<Context>()));
-
-                    container.Register<ISearchIndex<Item>>(c => new SearchIndex<Item>(c.Resolve<EntityFrameworkSearchContext>()));
-
-                    await container.Search.AddAsync(new Item());
+                    Console.WriteLine(search.Count());
                 }
             }
             catch (Exception exception)
@@ -69,6 +42,24 @@ namespace ConsoleClient
                 Console.WriteLine(exception);
             }
             Console.WriteLine("Done executing");
+        }
+
+        public class ItemSearchResult : ISearchResult
+        {
+            public int Id { get; set; }
+        }
+
+        public class ItemSearchResultIndexer : SearchIndexer<ItemSearchResult>
+        {
+            public ItemSearchResultIndexer(ISearchContext context)
+                : base(context)
+            {
+            }
+
+            public override Task AddAsync(ItemSearchResult[] instances)
+            {
+                return base.AddAsync(instances);
+            }
         }
     }
 }

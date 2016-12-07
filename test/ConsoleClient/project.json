@@ -1,4 +1,4 @@
-﻿{
+{
   "version": "1.0.0-*",
   "buildOptions": {
     "emitEntryPoint": true
@@ -13,8 +13,7 @@
     "Microsoft.EntityFrameworkCore": "1.1.0",
     "Microsoft.EntityFrameworkCore.Design": "1.1.0",
     "Microsoft.EntityFrameworkCore.SqlServer": "1.1.0",
-    "Slalom.Stacks": "1.0.5"
-  },
+    "Slalom.Stacks": "1.0.9" },
 
   "tools": {
     "Microsoft.EntityFrameworkCore.Tools.DotNet": "1.1.0-preview3-final"
