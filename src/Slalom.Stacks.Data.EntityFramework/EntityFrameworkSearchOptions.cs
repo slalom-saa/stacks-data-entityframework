@@ -10,7 +10,7 @@ namespace Slalom.Stacks.Data.EntityFramework
     /// <summary>
     /// Options for the Entity Framework Search module.
     /// </summary>
-    public class SearchOptions
+    public class EntityFrameworkSearchOptions
     {
         private readonly List<Type> _searchResults = new List<Type>();
 
@@ -31,7 +31,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// </summary>
         /// <param name="connectionString">The connection string to use.</param>
         /// <returns>Returns this instance for chaining.</returns>
-        public SearchOptions WithConnectionString(string connectionString)
+        public EntityFrameworkSearchOptions WithConnectionString(string connectionString)
         {
             Argument.NotNullOrWhiteSpace(() => connectionString);
 
@@ -46,7 +46,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// <param name="types">The types to ensure.</param>
         /// <returns>Returns this instance for chaining.</returns>
         /// <exception cref="System.ArgumentException">All the specified types must be search results.</exception>
-        public SearchOptions EnsureSearchResults(params Type[] types)
+        public EntityFrameworkSearchOptions WithSearchResults(params Type[] types)
         {
             Argument.NotNull(() => types);
 
