@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Reflection;
 using Slalom.Stacks.Search;
+using Slalom.Stacks.Validation;
 
 namespace Slalom.Stacks.Data.EntityFramework
 {
@@ -12,28 +12,52 @@ namespace Slalom.Stacks.Data.EntityFramework
     /// </summary>
     public class SearchOptions
     {
+        private readonly List<Type> _searchResults = new List<Type>();
+
         /// <summary>
         /// Gets the connection string.
         /// </summary>
         /// <value>The connection string.</value>
         internal string ConnectionString { get; private set; } = "Data Source=localhost;Initial Catalog=Stacks.Search;Integrated Security=True";
 
-        private readonly List<Type> _resultTypes = new List<Type>();
-
         /// <summary>
         /// Gets the result types.
         /// </summary>
         /// <value>The result types.</value>
-        internal IEnumerable<Type> ResultTypes => _resultTypes.AsEnumerable();
+        internal IEnumerable<Type> SearchResults => _searchResults.AsEnumerable();
 
         /// <summary>
-        /// Adds the search result to the loaded set.
+        /// Sets the connection string to use.
         /// </summary>
-        /// <typeparam name="T">The type of search result.</typeparam>
-        /// <returns>The instance for chaining.</returns>
-        public SearchOptions UseSearchResult<T>() where T : ISearchResult
+        /// <param name="connectionString">The connection string to use.</param>
+        /// <returns>Returns this instance for chaining.</returns>
+        public SearchOptions WithConnectionString(string connectionString)
         {
-            _resultTypes.Add(typeof(T));
+            Argument.NotNullOrWhiteSpace(() => connectionString);
+
+            this.ConnectionString = connectionString;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Ensures that the search context can use the search result types.
+        /// </summary>
+        /// <param name="types">The types to ensure.</param>
+        /// <returns>Returns this instance for chaining.</returns>
+        /// <exception cref="System.ArgumentException">All the specified types must be search results.</exception>
+        public SearchOptions EnsureSearchResults(params Type[] types)
+        {
+            Argument.NotNull(() => types);
+
+            foreach (var type in types)
+            {
+                if (!typeof(ISearchResult).IsAssignableFrom(type))
+                {
+                    throw new ArgumentException("All the specified types must be search results.");
+                }
+            }
+            _searchResults.AddRange(types);
             return this;
         }
     }

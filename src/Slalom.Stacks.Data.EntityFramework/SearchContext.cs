@@ -165,7 +165,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         {
             base.OnModelCreating(modelBuilder);
 
-            foreach (var item in _options.ResultTypes)
+            foreach (var item in _options.SearchResults)
             {
                 modelBuilder.Entity(item)
                             .HasKey("Id");
