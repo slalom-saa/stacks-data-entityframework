@@ -32,6 +32,17 @@ namespace Slalom.Stacks.Data.EntityFramework
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="EntityFrameworkSearchModule"/> class.
+        /// </summary>
+        /// <param name="options">The options to use.</param>
+        public EntityFrameworkSearchModule(SearchOptions options)
+        {
+            Argument.NotNull(() => options);
+
+            _options = options;
+        }
+
+        /// <summary>
         /// Override to add registrations to the container.
         /// </summary>
         /// <param name="builder">The builder through which components can be
@@ -48,12 +59,6 @@ namespace Slalom.Stacks.Data.EntityFramework
                    {
                        e.Instance.EnsureMigrations();
                    });
-
-            foreach (var type in _options.ResultTypes)
-            {
-                builder.Register(c => Activator.CreateInstance(typeof(SearchIndexer<>).MakeGenericType(type), c.Resolve<SearchContext>()))
-                       .As(typeof(ISearchIndexer<>).MakeGenericType(type));
-            }
         }
     }
 }
