@@ -11,7 +11,7 @@ namespace Slalom.Stacks.Data.EntityFramework
     /// <seealso cref="Autofac.Module" />
     public class EntityFrameworkSearchModule : Module
     {
-        private readonly SearchOptions _options = new SearchOptions();
+        private readonly EntityFrameworkSearchOptions _options = new EntityFrameworkSearchOptions();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityFrameworkSearchModule"/> class.
@@ -24,7 +24,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// Initializes a new instance of the <see cref="EntityFrameworkSearchModule"/> class.
         /// </summary>
         /// <param name="configuration">The configuration routine.</param>
-        public EntityFrameworkSearchModule(Action<SearchOptions> configuration)
+        public EntityFrameworkSearchModule(Action<EntityFrameworkSearchOptions> configuration)
         {
             Argument.NotNull(() => configuration);
 
@@ -35,7 +35,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// Initializes a new instance of the <see cref="EntityFrameworkSearchModule"/> class.
         /// </summary>
         /// <param name="options">The options to use.</param>
-        public EntityFrameworkSearchModule(SearchOptions options)
+        public EntityFrameworkSearchModule(EntityFrameworkSearchOptions options)
         {
             Argument.NotNull(() => options);
 
