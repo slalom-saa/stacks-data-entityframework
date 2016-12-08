@@ -36,7 +36,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// <returns>A task for asynchronous programming.</returns>
         /// <remarks>This allows for performance gain in larger data sets.  If you are unsure
         /// and have a small set, then you can use the update method.</remarks>
-        public Task AddAsync<TSearchResult>(TSearchResult[] instances) where TSearchResult : class
+        public Task AddAsync<TSearchResult>(TSearchResult[] instances) where TSearchResult : class, ISearchResult
         {
             this.Set<TSearchResult>().AddRange(instances);
 
@@ -48,7 +48,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// </summary>
         /// <typeparam name="TSearchResult">The type of instance.</typeparam>
         /// <returns>A task for asynchronous programming.</returns>
-        public Task ClearAsync<TSearchResult>() where TSearchResult : class
+        public Task ClearAsync<TSearchResult>() where TSearchResult : class, ISearchResult
         {
             this.Set<TSearchResult>().RemoveRange(this.Set<TSearchResult>());
 
@@ -60,7 +60,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// </summary>
         /// <typeparam name="TSearchResult">The type of the instance.</typeparam>
         /// <returns>An IQueryable&lt;TAggregateRoot&gt; that can be used to filter and project.</returns>
-        public IQueryable<TSearchResult> OpenQuery<TSearchResult>() where TSearchResult : class
+        public IQueryable<TSearchResult> OpenQuery<TSearchResult>() where TSearchResult : class, ISearchResult
         {
             return this.Set<TSearchResult>().AsNoTracking();
         }
@@ -71,7 +71,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// <typeparam name="TSearchResult">The type of instance to remove.</typeparam>
         /// <param name="predicate">The predicate used to filter.</param>
         /// <returns>A task for asynchronous programming.</returns>
-        public Task RemoveAsync<TSearchResult>(Expression<Func<TSearchResult, bool>> predicate) where TSearchResult : class
+        public Task RemoveAsync<TSearchResult>(Expression<Func<TSearchResult, bool>> predicate) where TSearchResult : class, ISearchResult
         {
             this.Set<TSearchResult>().RemoveRange(this.Set<TSearchResult>().Where(predicate));
 
@@ -84,7 +84,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// <typeparam name="TSearchResult">The type of instance to remove.</typeparam>
         /// <param name="instances">The instances to remove.</param>
         /// <returns>A task for asynchronous programming.</returns>
-        public Task RemoveAsync<TSearchResult>(TSearchResult[] instances) where TSearchResult : class
+        public Task RemoveAsync<TSearchResult>(TSearchResult[] instances) where TSearchResult : class, ISearchResult
         {
             this.Set<TSearchResult>().RemoveRange(instances);
             return this.SaveChangesAsync();
@@ -96,7 +96,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// <typeparam name="TSearchResult">The type of the instance.</typeparam>
         /// <param name="id">The instance identifier.</param>
         /// <returns>A task for asynchronous programming.</returns>
-        public Task<TSearchResult> FindAsync<TSearchResult>(int id) where TSearchResult : class
+        public Task<TSearchResult> FindAsync<TSearchResult>(int id) where TSearchResult : class, ISearchResult
         {
             return this.Set<TSearchResult>().FindAsync(id);
         }
@@ -110,7 +110,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// <returns>A task for asynchronous programming.</returns>
         /// <remarks>This allows for performance gain in larger data sets.  If you are unsure
         /// and have a small set, then you can use the update method.</remarks>
-        public Task UpdateAsync<TSearchResult>(TSearchResult[] instances) where TSearchResult : class
+        public Task UpdateAsync<TSearchResult>(TSearchResult[] instances) where TSearchResult : class, ISearchResult
         {
             this.Set<TSearchResult>().UpdateRange(instances);
 
@@ -125,7 +125,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// <param name="expression">The expression used to update.</param>
         /// <returns>A task for asynchronous programming.</returns>
         /// <exception cref="System.NotSupportedException"></exception>
-        public Task UpdateAsync<TSearchResult>(Expression<Func<TSearchResult, bool>> predicate, Expression<Func<Type, Type>> expression) where TSearchResult : class
+        public Task UpdateAsync<TSearchResult>(Expression<Func<TSearchResult, bool>> predicate, Expression<Func<Type, Type>> expression) where TSearchResult : class, ISearchResult
         {
             throw new NotSupportedException();
         }
