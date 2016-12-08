@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Slalom.Stacks.Data.EntityFramework;
+using Slalom.Stacks.Configuration;
 using Slalom.Stacks.Validation;
 
-namespace Slalom.Stacks.Configuration
+namespace Slalom.Stacks.Data.EntityFramework
 {
     /// <summary>
-    /// Contains extension methods for adding Entity Framework blocks.
+    /// Contains extension methods for adding Entity Framework Data blocks.
     /// </summary>
-    public static class ContainerExtensions
+    public static class ConfigurationExtensions
     {
         /// <summary>
         /// Adds the Entity Framework Search block to the container.
@@ -36,6 +34,20 @@ namespace Slalom.Stacks.Configuration
             Argument.NotNull(() => instance);
 
             instance.RegisterModule(new EntityFrameworkSearchModule(configuration));
+            return instance;
+        }
+
+        /// <summary>
+        /// Adds the Entity Framework Search block to the container.
+        /// </summary>
+        /// <param name="instance">The container instance.</param>
+        /// <param name="options">The options to use.</param>
+        /// <returns>Returns the container instance for method chaining.</returns>
+        public static ApplicationContainer UseEntityFrameworkSearch(this ApplicationContainer instance, EntityFrameworkSearchOptions options)
+        {
+            Argument.NotNull(() => instance);
+
+            instance.RegisterModule(new EntityFrameworkSearchModule(options));
             return instance;
         }
     }
