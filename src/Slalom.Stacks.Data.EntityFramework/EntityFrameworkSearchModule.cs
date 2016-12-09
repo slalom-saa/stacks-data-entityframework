@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Linq;
 using Autofac;
+using Microsoft.Extensions.Configuration;
+using Slalom.Stacks.Reflection;
 using Slalom.Stacks.Search;
 using Slalom.Stacks.Validation;
+using System.Reflection;
+using Module = Autofac.Module;
 
 namespace Slalom.Stacks.Data.EntityFramework
 {
@@ -58,6 +63,17 @@ namespace Slalom.Stacks.Data.EntityFramework
                    .SingleInstance().OnActivated(e =>
                    {
                        e.Instance.EnsureMigrations();
+                   }).OnPreparing(e =>
+                   {
+                       var configuration = e.Context.Resolve<IConfiguration>();
+                       _options.ConnectionString = configuration["Stacks:Data:EntityFramework:ConnectionString"] ?? _options.ConnectionString;
+                       _options.AutoAddSearchResults = Convert.ToBoolean(configuration["Stacks:Data:EntityFramework:AutoAddSearchResults"] ?? _options.AutoAddSearchResults.ToString());
+                       if (_options.AutoAddSearchResults)
+                       {
+                           var types = e.Context.Resolve<IDiscoverTypes>().Find<ISearchResult>()
+                                        .Where(x => !x.GetTypeInfo().IsAbstract && !x.GetTypeInfo().IsInterface);
+                           _options.SearchResultTypes.AddRange(types);
+                       }
                    });
         }
     }

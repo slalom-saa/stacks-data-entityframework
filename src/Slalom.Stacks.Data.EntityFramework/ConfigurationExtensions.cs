@@ -6,12 +6,12 @@ using Slalom.Stacks.Validation;
 namespace Slalom.Stacks.Data.EntityFramework
 {
     /// <summary>
-    /// Contains extension methods for adding Entity Framework Data blocks.
+    /// Contains extension methods to add Entity Framework Data blocks.
     /// </summary>
     public static class ConfigurationExtensions
     {
         /// <summary>
-        /// Adds the Entity Framework Search block to the container.
+        /// Adds the Entity Framework Search block.
         /// </summary>
         /// <param name="instance">The container instance.</param>
         /// <returns>Returns the container instance for method chaining.</returns>
@@ -24,7 +24,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         }
 
         /// <summary>
-        /// Adds the Entity Framework Search block to the container.
+        /// Adds the Entity Framework Search block.
         /// </summary>
         /// <param name="instance">The container instance.</param>
         /// <param name="configuration">The configuration routine.</param>
@@ -38,7 +38,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         }
 
         /// <summary>
-        /// Adds the Entity Framework Search block to the container.
+        /// Adds the Entity Framework Search block.
         /// </summary>
         /// <param name="instance">The container instance.</param>
         /// <param name="options">The options to use.</param>
