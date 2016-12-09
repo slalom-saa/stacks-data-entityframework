@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Slalom.Stacks.Search;
 using Slalom.Stacks.Validation;
@@ -12,19 +11,15 @@ namespace Slalom.Stacks.Data.EntityFramework
     /// </summary>
     public class EntityFrameworkSearchOptions
     {
-        private readonly List<Type> _searchResults = new List<Type>();
+        internal string ConnectionString { get; set; } = "Data Source=localhost;Initial Catalog=Stacks.Search;Integrated Security=True";
 
-        /// <summary>
-        /// Gets the connection string.
-        /// </summary>
-        /// <value>The connection string.</value>
-        internal string ConnectionString { get; private set; } = "Data Source=localhost;Initial Catalog=Stacks.Search;Integrated Security=True";
+        internal bool AutoAddSearchResults { get; set; } = true;
 
         /// <summary>
         /// Gets the result types.
         /// </summary>
         /// <value>The result types.</value>
-        internal IEnumerable<Type> SearchResults => _searchResults.AsEnumerable();
+        internal List<Type> SearchResultTypes { get; private set; } = new List<Type>();
 
         /// <summary>
         /// Sets the connection string to use.
@@ -41,7 +36,19 @@ namespace Slalom.Stacks.Data.EntityFramework
         }
 
         /// <summary>
-        /// Ensures that the search context can use the search result types.
+        /// Sets the context to automatically add search result types.
+        /// </summary>
+        /// <param name="auto">if set to <c>true</c>, automatically add types.</param>
+        /// <returns>Returns this instance for chaining.</returns>
+        public EntityFrameworkSearchOptions WithAutoAddSearchResults(bool auto = true)
+        {
+            this.AutoAddSearchResults = auto;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Ensures that the search context can use the search result types.  Sets the context to not automatically load types.
         /// </summary>
         /// <param name="types">The types to ensure.</param>
         /// <returns>Returns this instance for chaining.</returns>
@@ -50,6 +57,8 @@ namespace Slalom.Stacks.Data.EntityFramework
         {
             Argument.NotNull(() => types);
 
+            this.AutoAddSearchResults = false;
+
             foreach (var type in types)
             {
                 if (!typeof(ISearchResult).IsAssignableFrom(type))
@@ -57,7 +66,7 @@ namespace Slalom.Stacks.Data.EntityFramework
                     throw new ArgumentException("All the specified types must be search results.");
                 }
             }
-            _searchResults.AddRange(types);
+            this.SearchResultTypes.AddRange(types);
             return this;
         }
     }
