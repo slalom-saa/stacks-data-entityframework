@@ -10,6 +10,11 @@ using Module = Autofac.Module;
 
 namespace Slalom.Stacks.Data.EntityFramework
 {
+    internal class MigrationMarker
+    {
+        public bool Migrated { get; set; }
+    }
+
     /// <summary>
     /// An Autofac module for configuring the Entity Framework Search module.
     /// </summary>
@@ -57,12 +62,20 @@ namespace Slalom.Stacks.Data.EntityFramework
         {
             base.Load(builder);
 
+            builder.Register(c => new MigrationMarker()).SingleInstance();
+
             builder.Register(c => new SearchContext(_options))
                    .AsSelf()
                    .As<ISearchContext>()
-                   .SingleInstance().OnActivated(e =>
+                   .OnActivated(e =>
                    {
-                       e.Instance.EnsureMigrations();
+                       var marker = e.Context.Resolve<MigrationMarker>();
+                       if (!marker.Migrated)
+                       {
+                           marker.Migrated = true;
+                           e.Instance.EnsureMigrations();
+                       }
+                       e.Instance.ChangeTracker.AutoDetectChangesEnabled = false;
                    }).OnPreparing(e =>
                    {
                        var configuration = e.Context.Resolve<IConfiguration>();
