@@ -11,7 +11,7 @@ namespace Slalom.Stacks.Data.EntityFramework
     /// </summary>
     public class EntityFrameworkSearchOptions
     {
-        internal string ConnectionString { get; set; } = "Data Source=localhost;Initial Catalog=Stacks.Search;Integrated Security=True";
+        internal string ConnectionString { get; set; } = "Data Source=localhost;Initial Catalog=Stacks.Search;Integrated Security=True;MultipleActiveResultSets=True";
 
         internal bool AutoAddSearchResults { get; set; } = true;
 
