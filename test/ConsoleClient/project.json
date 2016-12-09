@@ -1,5 +1,8 @@
 {
   "version": "1.0.0-*",
+  "runtimes": {
+    "win10-x64": {}
+  },
   "buildOptions": {
     "emitEntryPoint": true
   },
@@ -8,7 +11,6 @@
     "Microsoft.EntityFrameworkCore": "1.1.0",
     "Microsoft.EntityFrameworkCore.Design": "1.1.0",
     "Microsoft.EntityFrameworkCore.SqlServer": "1.1.0",
-    "Slalom.Stacks": "1.0.36",
     "Slalom.Stacks.Data.EntityFramework": {
       "target": "project"
     },

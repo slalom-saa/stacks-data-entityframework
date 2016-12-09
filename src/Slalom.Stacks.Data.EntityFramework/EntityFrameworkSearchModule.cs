@@ -10,11 +10,6 @@ using Module = Autofac.Module;
 
 namespace Slalom.Stacks.Data.EntityFramework
 {
-    internal class MigrationMarker
-    {
-        public bool Migrated { get; set; }
-    }
-
     /// <summary>
     /// An Autofac module for configuring the Entity Framework Search module.
     /// </summary>

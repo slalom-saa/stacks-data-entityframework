@@ -149,8 +149,6 @@ namespace Slalom.Stacks.Data.EntityFramework
             base.OnConfiguring(optionsBuilder);
 
             optionsBuilder.UseSqlServer(_options.ConnectionString);
-
-            this.ChangeTracker.AutoDetectChangesEnabled = false;
         }
 
         /// <summary>

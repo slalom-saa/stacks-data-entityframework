@@ -13,12 +13,12 @@ namespace ConsoleClient
     {
         public static void Main(string[] args)
         {
-            new Program().Run();
-            Console.WriteLine("Press any key to stop...");
+            Task.Factory.StartNew(() => new Program().Start());
+            Console.WriteLine("Running application.  Press any key to halt...");
             Console.ReadKey();
         }
 
-        public async Task Run()
+        public async Task Start()
         {
             try
             {
@@ -30,16 +30,19 @@ namespace ConsoleClient
 
                     await container.Search.RebuildIndexAsync<ItemSearchResult>();
 
-                    var search = container.Search.CreateQuery<ItemSearchResult>();
-
-                    Console.WriteLine(search.Count());
+                    var count = container.Search.CreateQuery<ItemSearchResult>().Count();
                 }
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Execution completed successfully.  Press any key to exit...");
+                Console.ResetColor();
             }
             catch (Exception exception)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(exception);
+                Console.ResetColor();
             }
-            Console.WriteLine("Done with async execution.");
         }
     }
 }
