@@ -12,7 +12,7 @@
     "Microsoft.EntityFrameworkCore.Relational": "1.1.0",
     "Microsoft.EntityFrameworkCore.SqlServer": "1.1.0",
     "NETStandard.Library": "1.6.1",
-    "Slalom.Stacks": "1.0.37"
+    "Slalom.Stacks": "1.0.39"
   },
 
   "buildOptions": {
