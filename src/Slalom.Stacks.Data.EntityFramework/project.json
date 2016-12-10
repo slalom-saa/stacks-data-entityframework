@@ -1,5 +1,5 @@
 {
-  "version": "1.0.21-*",
+  "version": "1.0.22-*",
   "authors": [ "Slalom Architect Academy" ],
   "packOptions": {
     "tags": [ "slalom", "stacks", "blocks", "data", "entityframework" ],
