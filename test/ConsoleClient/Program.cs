@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Slalom.Stacks.Configuration;
 using Slalom.Stacks.Data.EntityFramework;
+// ReSharper disable AccessToDisposedClosure
 
 #pragma warning disable 1998
 #pragma warning disable 4014
@@ -22,19 +24,23 @@ namespace ConsoleClient
         {
             try
             {
+                var watch = new Stopwatch();
                 using (var container = new ApplicationContainer(this))
                 {
-                    container.RegisterModule(new EntityFrameworkSearchModule());
+                    container.UseEntityFrameworkSearch();
 
-                    await container.Search.AddAsync(new ItemSearchResult());
+                    watch.Start();
+                    for (int i = 0; i < 100; i++)
+                    {
+                        await Task.Run(() => container.Search.AddAsync(new ItemSearchResult()).ConfigureAwait(false));
+                    }
 
-                    await container.Search.RebuildIndexAsync<ItemSearchResult>();
-
-                    var count = container.Search.CreateQuery<ItemSearchResult>().Count();
+                    var target = container.Search.OpenQuery<ItemSearchResult>().Where(e => e.Name.Contains("a")).ToList();
+                    watch.Stop();
                 }
 
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Execution completed successfully.  Press any key to exit...");
+                Console.WriteLine($"Execution completed successfully in {watch.Elapsed}.  Press any key to exit...");
                 Console.ResetColor();
             }
             catch (Exception exception)

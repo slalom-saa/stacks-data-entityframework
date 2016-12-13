@@ -22,7 +22,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// <param name="options">The options.</param>
         public SearchContext(EntityFrameworkSearchOptions options)
         {
-            Argument.NotNull(() => options);
+            Argument.NotNull(options, nameof(options));
 
             _options = options;
         }

@@ -6,6 +6,7 @@ using Slalom.Stacks.Reflection;
 using Slalom.Stacks.Search;
 using Slalom.Stacks.Validation;
 using System.Reflection;
+using Slalom.Stacks.Configuration;
 using Module = Autofac.Module;
 
 namespace Slalom.Stacks.Data.EntityFramework
@@ -31,7 +32,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// <param name="configuration">The configuration routine.</param>
         public EntityFrameworkSearchModule(Action<EntityFrameworkSearchOptions> configuration)
         {
-            Argument.NotNull(() => configuration);
+            Argument.NotNull(configuration, nameof(configuration));
 
             configuration(_options);
         }
@@ -42,7 +43,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// <param name="options">The options to use.</param>
         public EntityFrameworkSearchModule(EntityFrameworkSearchOptions options)
         {
-            Argument.NotNull(() => options);
+            Argument.NotNull(options, nameof(options));
 
             _options = options;
         }
@@ -74,8 +75,8 @@ namespace Slalom.Stacks.Data.EntityFramework
                    }).OnPreparing(e =>
                    {
                        var configuration = e.Context.Resolve<IConfiguration>();
-                       _options.ConnectionString = configuration["Stacks:Data:EntityFramework:ConnectionString"] ?? _options.ConnectionString;
-                       _options.AutoAddSearchResults = Convert.ToBoolean(configuration["Stacks:Data:EntityFramework:AutoAddSearchResults"] ?? _options.AutoAddSearchResults.ToString());
+                       _options.ConnectionString = configuration.GetOptionalSetting("Stacks:Data:EntityFramework:ConnectionString", _options.ConnectionString);
+                       _options.AutoAddSearchResults = Convert.ToBoolean(configuration.GetOptionalSetting("Stacks:Data:EntityFramework:AutoAddSearchResults", "true"));
                        if (_options.AutoAddSearchResults)
                        {
                            var types = e.Context.Resolve<IDiscoverTypes>().Find<ISearchResult>()
