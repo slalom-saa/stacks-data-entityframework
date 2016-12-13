@@ -17,7 +17,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// <returns>Returns the container instance for method chaining.</returns>
         public static ApplicationContainer UseEntityFrameworkSearch(this ApplicationContainer instance)
         {
-            Argument.NotNull(() => instance);
+            Argument.NotNull(instance, nameof(instance));
 
             instance.RegisterModule(new EntityFrameworkSearchModule());
             return instance;
@@ -31,7 +31,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// <returns>Returns the container instance for method chaining.</returns>
         public static ApplicationContainer UseEntityFrameworkSearch(this ApplicationContainer instance, Action<EntityFrameworkSearchOptions> configuration)
         {
-            Argument.NotNull(() => instance);
+            Argument.NotNull(instance, nameof(instance));
 
             instance.RegisterModule(new EntityFrameworkSearchModule(configuration));
             return instance;
@@ -45,7 +45,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// <returns>Returns the container instance for method chaining.</returns>
         public static ApplicationContainer UseEntityFrameworkSearch(this ApplicationContainer instance, EntityFrameworkSearchOptions options)
         {
-            Argument.NotNull(() => instance);
+            Argument.NotNull(instance, nameof(instance));
 
             instance.RegisterModule(new EntityFrameworkSearchModule(options));
             return instance;

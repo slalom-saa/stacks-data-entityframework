@@ -28,7 +28,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// <returns>Returns this instance for chaining.</returns>
         public EntityFrameworkSearchOptions WithConnectionString(string connectionString)
         {
-            Argument.NotNullOrWhiteSpace(() => connectionString);
+            Argument.NotNullOrWhiteSpace(connectionString, nameof(connectionString));
 
             this.ConnectionString = connectionString;
 
@@ -55,7 +55,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// <exception cref="System.ArgumentException">All the specified types must be search results.</exception>
         public EntityFrameworkSearchOptions WithSearchResults(params Type[] types)
         {
-            Argument.NotNull(() => types);
+            Argument.NotNull(types, nameof(types));
 
             this.AutoAddSearchResults = false;
 
