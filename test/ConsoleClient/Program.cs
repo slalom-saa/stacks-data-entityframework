@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using ConsoleClient.Commands.AddItem;
 using Slalom.Stacks.Configuration;
 using Slalom.Stacks.Data.EntityFramework;
 // ReSharper disable AccessToDisposedClosure
@@ -32,10 +34,10 @@ namespace ConsoleClient
                     watch.Start();
                     for (int i = 0; i < 100; i++)
                     {
-                        await Task.Run(() => container.Search.AddAsync(new ItemSearchResult()).ConfigureAwait(false));
+                        var local = i;
+                        await Task.Run(() => container.Bus.SendAsync(new AddItemCommand("test " + local)).ConfigureAwait(false));
                     }
 
-                    var target = container.Search.OpenQuery<ItemSearchResult>().Where(e => e.Name.Contains("a")).ToList();
                     watch.Stop();
                 }
 
