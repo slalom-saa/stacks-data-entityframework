@@ -19,7 +19,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// Gets the result types.
         /// </summary>
         /// <value>The result types.</value>
-        internal List<Type> SearchResultTypes { get; private set; } = new List<Type>();
+        internal List<Type> SearchResultTypes { get; set; } = new List<Type>();
 
         /// <summary>
         /// Sets the connection string to use.
