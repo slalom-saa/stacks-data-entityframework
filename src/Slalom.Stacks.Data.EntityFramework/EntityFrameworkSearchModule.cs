@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Linq;
 using Autofac;
+using Autofac.Core;
 using Microsoft.Extensions.Configuration;
+using Slalom.Stacks.Configuration;
 using Slalom.Stacks.Reflection;
 using Slalom.Stacks.Search;
 using Slalom.Stacks.Validation;
-using System.Reflection;
-using Slalom.Stacks.Configuration;
-using Module = Autofac.Module;
 
 namespace Slalom.Stacks.Data.EntityFramework
 {
@@ -60,30 +58,36 @@ namespace Slalom.Stacks.Data.EntityFramework
 
             builder.Register(c => new MigrationMarker()).SingleInstance();
 
+            builder.Register(c => new DiscoveredSearchResultTypes(c.Resolve<IDiscoverTypes>()))
+                   .SingleInstance();
+
             builder.Register(c => new SearchContext(_options))
                    .AsSelf()
                    .As<ISearchContext>()
-                   .OnActivated(e =>
-                   {
-                       var marker = e.Context.Resolve<MigrationMarker>();
-                       if (!marker.Migrated)
-                       {
-                           marker.Migrated = true;
-                           e.Instance.EnsureMigrations();
-                       }
-                       e.Instance.ChangeTracker.AutoDetectChangesEnabled = false;
-                   }).OnPreparing(e =>
-                   {
-                       var configuration = e.Context.Resolve<IConfiguration>();
-                       _options.ConnectionString = configuration.GetOptionalSetting("Stacks:Data:EntityFramework:ConnectionString", _options.ConnectionString);
-                       _options.AutoAddSearchResults = Convert.ToBoolean(configuration.GetOptionalSetting("Stacks:Data:EntityFramework:AutoAddSearchResults", "true"));
-                       if (_options.AutoAddSearchResults)
-                       {
-                           var types = e.Context.Resolve<IDiscoverTypes>().Find<ISearchResult>()
-                                        .Where(x => !x.GetTypeInfo().IsAbstract && !x.GetTypeInfo().IsInterface);
-                           _options.SearchResultTypes.AddRange(types);
-                       }
-                   });
+                   .OnActivated(OnContextActivated)
+                   .OnPreparing(this.OnContextPreparing);
+        }
+
+        private static void OnContextActivated(IActivatedEventArgs<SearchContext> e)
+        {
+            var marker = e.Context.Resolve<MigrationMarker>();
+            if (!marker.Migrated)
+            {
+                marker.Migrated = true;
+                e.Instance.EnsureMigrations();
+            }
+            e.Instance.ChangeTracker.AutoDetectChangesEnabled = false;
+        }
+
+        private void OnContextPreparing(PreparingEventArgs e)
+        {
+            var configuration = e.Context.Resolve<IConfiguration>();
+            _options.ConnectionString = configuration.GetOptionalSetting("Stacks:Data:EntityFramework:ConnectionString", _options.ConnectionString);
+            _options.AutoAddSearchResults = Convert.ToBoolean(configuration.GetOptionalSetting("Stacks:Data:EntityFramework:AutoAddSearchResults", "true"));
+            if (_options.AutoAddSearchResults)
+            {
+                _options.SearchResultTypes = e.Context.Resolve<DiscoveredSearchResultTypes>().Items.Value;
+            }
         }
     }
 }
