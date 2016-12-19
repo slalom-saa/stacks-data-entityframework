@@ -39,7 +39,7 @@ namespace ConsoleClient
                     watch.Start();
 
                     var tasks = new List<Task>(count);
-                    Parallel.For(0, count, a =>
+                    Parallel.For(0, count, new ParallelOptions { MaxDegreeOfParallelism = 4 }, a =>
                     {
                         tasks.Add(container.Bus.SendAsync(new AddItemCommand("test " + a)));
                     });
@@ -47,9 +47,10 @@ namespace ConsoleClient
 
                     watch.Stop();
 
-                    if (container.Search.OpenQuery<ItemSearchResult>().Count() != count)
+                    var actual = container.Search.OpenQuery<ItemSearchResult>().Count();
+                    if (actual != count)
                     {
-                        throw new Exception("The expected count did not equal the actual count.");
+                        throw new Exception($"The expected count, {count}, did not equal the actual count, {actual}.");
                     }
                 }
 
