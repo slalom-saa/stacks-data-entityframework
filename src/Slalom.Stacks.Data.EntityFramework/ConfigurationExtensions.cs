@@ -26,5 +26,20 @@ namespace Slalom.Stacks.Data.EntityFramework
             instance.RegisterModule(new EntityFrameworkSearchModule(options));
             return instance;
         }
+
+        /// <summary>
+        /// Adds the Entity Framework Search block.
+        /// </summary>
+        /// <param name="instance">The container instance.</param>
+        /// <param name="options">The options to use.</param>
+        /// <returns>Returns the container instance for method chaining.</returns>
+        public static ApplicationContainer UseEntityFrameworkSearch(this ApplicationContainer instance, EntityFrameworkSearchOptions options)
+        {
+            Argument.NotNull(instance, nameof(instance));
+            Argument.NotNull(options, nameof(options));
+
+            instance.RegisterModule(new EntityFrameworkSearchModule(options));
+            return instance;
+        }
     }
 }
