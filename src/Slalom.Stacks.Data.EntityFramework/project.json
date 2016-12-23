@@ -1,5 +1,5 @@
 {
-  "version": "1.0.35-*",
+  "version": "1.0.36-*",
   "authors": [ "Slalom Architect Academy" ],
   "packOptions": {
     "tags": [ "slalom", "stacks", "blocks", "data", "entityframework" ],
@@ -15,7 +15,7 @@
     "Microsoft.EntityFrameworkCore.Relational": "1.1.0",
     "Microsoft.EntityFrameworkCore.SqlServer": "1.1.0",
     "NETStandard.Library": "1.6.1",
-    "Slalom.Stacks": "1.2.1"
+    "Slalom.Stacks": "1.2.4"
   },
 
   "buildOptions": {
@@ -28,7 +28,8 @@
       "imports": [
         "dotnet54",
         "portable-net45+win8"
-      ]
+      ],
+      "buildOptions": { "define": [ "core" ] }
     },
     "net461": {
       "dependencies": {
