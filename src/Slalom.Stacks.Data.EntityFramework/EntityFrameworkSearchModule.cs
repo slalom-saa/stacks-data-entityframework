@@ -13,9 +13,9 @@ namespace Slalom.Stacks.Data.EntityFramework
     /// An Autofac module for configuring the Entity Framework Search module.
     /// </summary>
     /// <seealso cref="Autofac.Module" />
-    public class EntityFrameworkSearchModule : Module
+    internal class EntityFrameworkSearchModule : Module
     {
-        private readonly EntityFrameworkSearchOptions _options = new EntityFrameworkSearchOptions();
+        private readonly EntityFrameworkSearchOptions _options;
        
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityFrameworkSearchModule"/> class.
