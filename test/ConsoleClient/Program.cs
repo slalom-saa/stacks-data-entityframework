@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using ConsoleClient.Commands.AddItem;
-using ConsoleClient.Search;
 using Slalom.Stacks.Configuration;
 using Slalom.Stacks.Data.EntityFramework;
+using Slalom.Stacks.Test.Commands.AddItem;
+using Slalom.Stacks.Test.Domain;
+using Slalom.Stacks.Test.Search;
+
 // ReSharper disable AccessToDisposedClosure
 
 #pragma warning disable 1998
@@ -30,7 +31,7 @@ namespace ConsoleClient
             {
                 var watch = new Stopwatch();
                 var count = 1000;
-                using (var container = new ApplicationContainer(this))
+                using (var container = new ApplicationContainer(typeof(Item)))
                 {
                     container.UseEntityFrameworkSearch();
 
