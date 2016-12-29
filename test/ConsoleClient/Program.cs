@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Slalom.Stacks;
 using Slalom.Stacks.Configuration;
 using Slalom.Stacks.Data.EntityFramework;
-using Slalom.Stacks.Test.Commands.AddItem;
-using Slalom.Stacks.Test.Domain;
-using Slalom.Stacks.Test.Search;
+using Slalom.Stacks.Messaging;
+using Slalom.Stacks.Test.Examples.Actors.Items.Add;
+using Slalom.Stacks.Test.Examples.Domain;
+using Slalom.Stacks.Test.Examples.Search;
 
 // ReSharper disable AccessToDisposedClosure
 
@@ -20,7 +23,7 @@ namespace ConsoleClient
     {
         public static void Main(string[] args)
         {
-            Task.Factory.StartNew(() => new Program().Start());
+            Task.Run(() => new Program().Start());
             Console.WriteLine("Running application.  Press any key to halt...");
             Console.ReadKey();
         }
@@ -39,10 +42,10 @@ namespace ConsoleClient
 
                     watch.Start();
 
-                    var tasks = new List<Task>(count);
+                    var tasks = new List<Task<CommandResult>>(count);
                     Parallel.For(0, count, new ParallelOptions { MaxDegreeOfParallelism = 4 }, a =>
                     {
-                        tasks.Add(container.Bus.SendAsync(new AddItemCommand("test " + a)));
+                        tasks.Add(container.SendAsync(new AddItemCommand("test " + a)));
                     });
                     await Task.WhenAll(tasks);
 
