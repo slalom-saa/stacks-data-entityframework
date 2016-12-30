@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Slalom.Stacks.Search;
 using Slalom.Stacks.Validation;
+using System.Reflection;
 
 namespace Slalom.Stacks.Data.EntityFramework
 {
@@ -11,15 +11,29 @@ namespace Slalom.Stacks.Data.EntityFramework
     /// </summary>
     public class EntityFrameworkSearchOptions
     {
+        internal bool AutoAddSearchResults { get; set; } = true;
+
         internal string ConnectionString { get; set; } = "Data Source=localhost;Initial Catalog=Stacks.Search;Integrated Security=True;MultipleActiveResultSets=True";
 
-        internal bool AutoAddSearchResults { get; set; } = true;
+        internal bool ForceMigrations { get; set; }
 
         /// <summary>
         /// Gets the result types.
         /// </summary>
         /// <value>The result types.</value>
         internal List<Type> SearchResultTypes { get; set; } = new List<Type>();
+
+        /// <summary>
+        /// Sets the context to automatically add search result types.
+        /// </summary>
+        /// <param name="auto">if set to <c>true</c>, automatically add types.</param>
+        /// <returns>Returns this instance for chaining.</returns>
+        public EntityFrameworkSearchOptions WithAutoAddSearchResults(bool auto = true)
+        {
+            this.AutoAddSearchResults = auto;
+
+            return this;
+        }
 
         /// <summary>
         /// Sets the connection string to use.
@@ -36,13 +50,13 @@ namespace Slalom.Stacks.Data.EntityFramework
         }
 
         /// <summary>
-        /// Sets the context to automatically add search result types.
+        /// Sets the options to force migrations.
         /// </summary>
-        /// <param name="auto">if set to <c>true</c>, automatically add types.</param>
+        /// <param name="force">If set to <c>true</c> then force the migrations.</param>
         /// <returns>Returns this instance for chaining.</returns>
-        public EntityFrameworkSearchOptions WithAutoAddSearchResults(bool auto = true)
+        public EntityFrameworkSearchOptions WithForcedMigrations(bool force = true)
         {
-            this.AutoAddSearchResults = auto;
+            this.ForceMigrations = force;
 
             return this;
         }

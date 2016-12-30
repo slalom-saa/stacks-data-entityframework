@@ -14,8 +14,7 @@
     "Slalom.Stacks.Data.EntityFramework": {
       "target": "project"
     },
-    "Slalom.Stacks.Test": "1.0.2"
-  },
+    "Slalom.Stacks.Test": "1.2.57"  },
 
   "tools": {
     "Microsoft.EntityFrameworkCore.Tools.DotNet": "1.1.0-preview4-final"

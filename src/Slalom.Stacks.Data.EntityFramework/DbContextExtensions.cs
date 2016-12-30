@@ -13,10 +13,11 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// Ensures that the database is created and no migrations are pending.
         /// </summary>
         /// <param name="context">The context.</param>
-        public static void EnsureMigrations(this DbContext context)
+        /// <param name="force">If set to <c>true</c> then force the migrations.</param>
+        public static void EnsureMigrations(this DbContext context, bool force = false)
         {
             context.Database.EnsureCreated();
-            if (context.Database.GetPendingMigrations().Any())
+            if (force || context.Database.GetPendingMigrations().Any())
             {
                 context.Database.Migrate();
             }
@@ -27,10 +28,11 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns>Task.</returns>
-        public static async Task EnsureMigrationsAsync(this DbContext context)
+        /// <param name="force">If set to <c>true</c> then force the migrations.</param>
+        public static async Task EnsureMigrationsAsync(this DbContext context, bool force = false)
         {
             await context.Database.EnsureCreatedAsync();
-            if ((await context.Database.GetPendingMigrationsAsync()).Any())
+            if (force || (await context.Database.GetPendingMigrationsAsync()).Any())
             {
                 await context.Database.MigrateAsync();
             }

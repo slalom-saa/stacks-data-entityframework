@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Slalom.Stacks.Configuration;
+using Slalom.Stacks;
 using Slalom.Stacks.Data.EntityFramework;
-using Slalom.Stacks.Test.Commands.AddItem;
-using Slalom.Stacks.Test.Domain;
-using Slalom.Stacks.Test.Search;
+using Slalom.Stacks.Messaging;
+using Slalom.Stacks.Test.Examples.Actors.Items.Add;
+using Slalom.Stacks.Test.Examples.Domain;
+using Slalom.Stacks.Test.Examples.Search;
 
 // ReSharper disable AccessToDisposedClosure
 
@@ -33,18 +34,26 @@ namespace ConsoleClient
                 var count = 1000;
                 using (var container = new ApplicationContainer(typeof(Item)))
                 {
-                    container.UseEntityFrameworkSearch();
+                    container.UseEntityFrameworkSearch(e =>
+                    {
+                        e.WithAutoAddSearchResults();
+                        e.WithForcedMigrations();
+                    });
 
                     await container.Search.ClearAsync<ItemSearchResult>();
 
                     watch.Start();
 
-                    var tasks = new List<Task>(count);
+                    var tasks = new List<Task<CommandResult>>(count);
                     Parallel.For(0, count, new ParallelOptions { MaxDegreeOfParallelism = 4 }, a =>
                     {
-                        tasks.Add(container.Bus.SendAsync(new AddItemCommand("test " + a)));
+                        tasks.Add(container.SendAsync(new AddItemCommand("test " + a)));
                     });
                     await Task.WhenAll(tasks);
+
+                    var failed = tasks.Where(e => !e.Result.IsSuccessful).Select(e => e.Result);
+
+                    Console.WriteLine(failed.Count());
 
                     watch.Stop();
 
