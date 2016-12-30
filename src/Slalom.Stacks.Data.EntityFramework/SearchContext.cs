@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -27,6 +29,31 @@ namespace Slalom.Stacks.Data.EntityFramework
             _options = options;
         }
 
+        public static DataTable CreateDataTable<T>(params T[] items) where T : ISearchResult
+        {
+            var type = typeof(T);
+            var properties = type.GetProperties();
+
+            var dataTable = new DataTable();
+            foreach (var info in properties)
+            {
+                dataTable.Columns.Add(new DataColumn(info.Name, Nullable.GetUnderlyingType(info.PropertyType) ?? info.PropertyType));
+            }
+
+            foreach (var entity in items)
+            {
+                var values = new object[properties.Length];
+                for (var i = 0; i < properties.Length; i++)
+                {
+                    values[i] = properties[i].GetValue(entity);
+                }
+
+                dataTable.Rows.Add(values);
+            }
+
+            return dataTable;
+        }
+
         /// <summary>
         /// Adds the specified instances. Add is similar to Update, but skips a check to see if the
         /// item already exists.
@@ -36,11 +63,27 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// <returns>A task for asynchronous programming.</returns>
         /// <remarks>This allows for performance gain in larger data sets.  If you are unsure
         /// and have a small set, then you can use the update method.</remarks>
-        public Task AddAsync<TSearchResult>(TSearchResult[] instances) where TSearchResult : class, ISearchResult
+        public async Task AddAsync<TSearchResult>(TSearchResult[] instances) where TSearchResult : class, ISearchResult
         {
-            this.Set<TSearchResult>().AddRange(instances);
+            var table = CreateDataTable(instances);
 
-            return this.SaveChangesAsync();
+            using (var connection = new SqlConnection(_options.ConnectionString))
+            {
+                connection.Open();
+
+                using (var copy = new SqlBulkCopy(connection))
+                {
+                    copy.DestinationTableName = string.Format(typeof(TSearchResult).Name);
+                    foreach (var column in table.Columns)
+                    {
+                        var columnName = ((DataColumn)column).ColumnName;
+                        var mapping = new SqlBulkCopyColumnMapping(columnName, columnName);
+                        copy.ColumnMappings.Add(mapping);
+                    }
+
+                    await copy.WriteToServerAsync(table).ConfigureAwait(false);
+                }
+            }
         }
 
         /// <summary>
@@ -48,11 +91,17 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// </summary>
         /// <typeparam name="TSearchResult">The type of instance.</typeparam>
         /// <returns>A task for asynchronous programming.</returns>
-        public Task ClearAsync<TSearchResult>() where TSearchResult : class, ISearchResult
+        public async Task ClearAsync<TSearchResult>() where TSearchResult : class, ISearchResult
         {
-            this.Set<TSearchResult>().RemoveRange(this.Set<TSearchResult>());
+            using (var connection = new SqlConnection(_options.ConnectionString))
+            {
+                connection.Open();
 
-            return this.SaveChangesAsync();
+                using (var command = new SqlCommand("DELETE FROM [" + typeof(TSearchResult).Name + "]", connection))
+                {
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
         }
 
         /// <summary>
@@ -87,6 +136,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         public Task RemoveAsync<TSearchResult>(TSearchResult[] instances) where TSearchResult : class, ISearchResult
         {
             this.Set<TSearchResult>().RemoveRange(instances);
+
             return this.SaveChangesAsync();
         }
 
@@ -149,6 +199,7 @@ namespace Slalom.Stacks.Data.EntityFramework
             base.OnConfiguring(optionsBuilder);
 
             optionsBuilder.UseSqlServer(_options.ConnectionString);
+            optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
         }
 
         /// <summary>

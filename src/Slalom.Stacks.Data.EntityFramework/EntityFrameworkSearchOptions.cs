@@ -15,7 +15,7 @@ namespace Slalom.Stacks.Data.EntityFramework
 
         internal string ConnectionString { get; set; } = "Data Source=localhost;Initial Catalog=Stacks.Search;Integrated Security=True;MultipleActiveResultSets=True";
 
-        internal bool ForceMigrations { get; set; }
+        internal bool WithMigration { get; set; }
 
         /// <summary>
         /// Gets the result types.
@@ -28,7 +28,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// </summary>
         /// <param name="auto">if set to <c>true</c>, automatically add types.</param>
         /// <returns>Returns this instance for chaining.</returns>
-        public EntityFrameworkSearchOptions WithAutoAddSearchResults(bool auto = true)
+        public EntityFrameworkSearchOptions WithAutoRegistration(bool auto = true)
         {
             this.AutoAddSearchResults = auto;
 
@@ -54,9 +54,9 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// </summary>
         /// <param name="force">If set to <c>true</c> then force the migrations.</param>
         /// <returns>Returns this instance for chaining.</returns>
-        public EntityFrameworkSearchOptions WithForcedMigrations(bool force = true)
+        public EntityFrameworkSearchOptions WithMigrations(bool force = true)
         {
-            this.ForceMigrations = force;
+            this.WithMigration = force;
 
             return this;
         }
