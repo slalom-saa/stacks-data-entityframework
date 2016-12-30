@@ -31,7 +31,7 @@ namespace ConsoleClient
             try
             {
                 var watch = new Stopwatch();
-                var count = 1000;
+                var count = 200;
                 using (var container = new ApplicationContainer(typeof(Item)))
                 {
                     container.UseEntityFrameworkSearch(e =>

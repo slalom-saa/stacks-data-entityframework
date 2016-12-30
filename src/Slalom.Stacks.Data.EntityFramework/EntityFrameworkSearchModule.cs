@@ -49,6 +49,7 @@ namespace Slalom.Stacks.Data.EntityFramework
                    .As<ISearchContext>()
                    .OnActivated(this.OnContextActivated)
                    .OnPreparing(this.OnContextPreparing);
+
         }
 
         private void OnContextActivated(IActivatedEventArgs<SearchContext> e)
