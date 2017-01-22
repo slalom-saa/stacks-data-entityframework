@@ -51,13 +51,13 @@ namespace ConsoleClient
                     var tasks = new List<Task<CommandResult>>(count);
                     for (int i = 0; i < count; i++)
                     {
-                        tasks.Add(container.SendAsync(new AddItemCommand("test " + i)));
+                        tasks.Add(container.Commands.SendAsync(new AddItemCommand("test " + i)));
                     };
                     await Task.WhenAll(tasks);
 
                     watch.Stop();
 
-                    var actual = container.Search.OpenQuery<ItemSearchResult>().Count();
+                    var actual = container.Search.Search<ItemSearchResult>().Count();
                     if (actual != count)
                     {
                         throw new Exception($"The expected count, {count}, did not equal the actual count, {actual}.");

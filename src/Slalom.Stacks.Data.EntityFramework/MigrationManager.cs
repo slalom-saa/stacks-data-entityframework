@@ -14,6 +14,7 @@ namespace Slalom.Stacks.Data.EntityFramework
                 if (options.WithMigration)
                 {
                     context.Database.EnsureCreated();
+                    context.Database.Migrate();
                 }
             }
         }

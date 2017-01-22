@@ -29,31 +29,6 @@ namespace Slalom.Stacks.Data.EntityFramework
             _options = options;
         }
 
-        public static DataTable CreateDataTable<T>(params T[] items) where T : ISearchResult
-        {
-            var type = typeof(T);
-            var properties = type.GetProperties();
-
-            var dataTable = new DataTable();
-            foreach (var info in properties)
-            {
-                dataTable.Columns.Add(new DataColumn(info.Name, Nullable.GetUnderlyingType(info.PropertyType) ?? info.PropertyType));
-            }
-
-            foreach (var entity in items)
-            {
-                var values = new object[properties.Length];
-                for (var i = 0; i < properties.Length; i++)
-                {
-                    values[i] = properties[i].GetValue(entity);
-                }
-
-                dataTable.Rows.Add(values);
-            }
-
-            return dataTable;
-        }
-
         /// <summary>
         /// Adds the specified instances. Add is similar to Update, but skips a check to see if the
         /// item already exists.
@@ -104,14 +79,40 @@ namespace Slalom.Stacks.Data.EntityFramework
             }
         }
 
+        public static DataTable CreateDataTable<T>(params T[] items) where T : ISearchResult
+        {
+            var type = typeof(T);
+            var properties = type.GetProperties();
+
+            var dataTable = new DataTable();
+            foreach (var info in properties)
+            {
+                dataTable.Columns.Add(new DataColumn(info.Name, Nullable.GetUnderlyingType(info.PropertyType) ?? info.PropertyType));
+            }
+
+            foreach (var entity in items)
+            {
+                var values = new object[properties.Length];
+                for (var i = 0; i < properties.Length; i++)
+                {
+                    values[i] = properties[i].GetValue(entity);
+                }
+
+                dataTable.Rows.Add(values);
+            }
+
+            return dataTable;
+        }
+
         /// <summary>
-        /// Opens a query that can be used to filter and project.
+        /// Finds the instance with the specified identifier.
         /// </summary>
         /// <typeparam name="TSearchResult">The type of the instance.</typeparam>
-        /// <returns>An IQueryable&lt;TAggregateRoot&gt; that can be used to filter and project.</returns>
-        public IQueryable<TSearchResult> OpenQuery<TSearchResult>() where TSearchResult : class, ISearchResult
+        /// <param name="id">The instance identifier.</param>
+        /// <returns>A task for asynchronous programming.</returns>
+        public Task<TSearchResult> FindAsync<TSearchResult>(int id) where TSearchResult : class, ISearchResult
         {
-            return this.Set<TSearchResult>().AsNoTracking();
+            return this.Set<TSearchResult>().FindAsync(id);
         }
 
         /// <summary>
@@ -141,14 +142,14 @@ namespace Slalom.Stacks.Data.EntityFramework
         }
 
         /// <summary>
-        /// Finds the instance with the specified identifier.
+        /// Opens a query that can be used to filter and project.
         /// </summary>
         /// <typeparam name="TSearchResult">The type of the instance.</typeparam>
-        /// <param name="id">The instance identifier.</param>
-        /// <returns>A task for asynchronous programming.</returns>
-        public Task<TSearchResult> FindAsync<TSearchResult>(int id) where TSearchResult : class, ISearchResult
+        /// <param name="text">The text to use for search.</param>
+        /// <returns>An IQueryable&lt;TAggregateRoot&gt; that can be used to filter and project.</returns>
+        public IQueryable<TSearchResult> Search<TSearchResult>(string text = null) where TSearchResult : class, ISearchResult
         {
-            return this.Set<TSearchResult>().FindAsync(id);
+            return this.Set<TSearchResult>().AsNoTracking();
         }
 
         /// <summary>
