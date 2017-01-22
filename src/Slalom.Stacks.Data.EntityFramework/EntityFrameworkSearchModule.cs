@@ -16,7 +16,7 @@ namespace Slalom.Stacks.Data.EntityFramework
     internal class EntityFrameworkSearchModule : Module
     {
         private readonly EntityFrameworkSearchOptions _options;
-       
+
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityFrameworkSearchModule"/> class.
         /// </summary>
@@ -38,7 +38,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         {
             base.Load(builder);
 
-            builder.Register(c => new MigrationMarker())
+            builder.Register(c => new MigrationManager())
                 .SingleInstance();
 
             builder.Register(c => new DiscoveredSearchResultTypes(c.Resolve<IDiscoverTypes>()))
@@ -49,16 +49,13 @@ namespace Slalom.Stacks.Data.EntityFramework
                    .As<ISearchContext>()
                    .OnActivated(this.OnContextActivated)
                    .OnPreparing(this.OnContextPreparing);
+
         }
 
         private void OnContextActivated(IActivatedEventArgs<SearchContext> e)
         {
-            var marker = e.Context.Resolve<MigrationMarker>();
-            if (!marker.Migrated)
-            {
-                marker.Migrated = true;
-                e.Instance.EnsureMigrations(_options.ForceMigrations);
-            }
+            var manager = e.Context.Resolve<MigrationManager>();
+            manager.EnsureMigrations(e.Instance, _options);
             e.Instance.ChangeTracker.AutoDetectChangesEnabled = false;
         }
 

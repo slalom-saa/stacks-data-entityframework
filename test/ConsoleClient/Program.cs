@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Slalom.Stacks;
 using Slalom.Stacks.Data.EntityFramework;
@@ -26,6 +28,8 @@ namespace ConsoleClient
             Console.ReadKey();
         }
 
+       
+
         public async Task Start()
         {
             try
@@ -34,10 +38,10 @@ namespace ConsoleClient
                 var count = 1000;
                 using (var container = new ApplicationContainer(typeof(Item)))
                 {
+
                     container.UseEntityFrameworkSearch(e =>
                     {
-                        e.WithAutoAddSearchResults();
-                        e.WithForcedMigrations();
+                        e.WithMigrations();
                     });
 
                     await container.Search.ClearAsync<ItemSearchResult>();
@@ -45,19 +49,15 @@ namespace ConsoleClient
                     watch.Start();
 
                     var tasks = new List<Task<CommandResult>>(count);
-                    Parallel.For(0, count, new ParallelOptions { MaxDegreeOfParallelism = 4 }, a =>
+                    for (int i = 0; i < count; i++)
                     {
-                        tasks.Add(container.SendAsync(new AddItemCommand("test " + a)));
-                    });
+                        tasks.Add(container.Commands.SendAsync(new AddItemCommand("test " + i)));
+                    };
                     await Task.WhenAll(tasks);
-
-                    var failed = tasks.Where(e => !e.Result.IsSuccessful).Select(e => e.Result);
-
-                    Console.WriteLine(failed.Count());
 
                     watch.Stop();
 
-                    var actual = container.Search.OpenQuery<ItemSearchResult>().Count();
+                    var actual = container.Search.Search<ItemSearchResult>().Count();
                     if (actual != count)
                     {
                         throw new Exception($"The expected count, {count}, did not equal the actual count, {actual}.");
