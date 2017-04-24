@@ -2,7 +2,7 @@
 using System.Data.SqlClient;
 using System.Linq;
 
-namespace Slalom.Stacks.Data.EntityFramework
+namespace Slalom.Stacks.EntityFramework
 {
     public class SqlConnectionManager : IDisposable
     {

@@ -4,7 +4,7 @@ using Slalom.Stacks.Search;
 using Slalom.Stacks.Validation;
 using System.Reflection;
 
-namespace Slalom.Stacks.Data.EntityFramework
+namespace Slalom.Stacks.EntityFramework
 {
     /// <summary>
     /// Options for the Entity Framework Search module.
@@ -67,7 +67,7 @@ namespace Slalom.Stacks.Data.EntityFramework
         /// <param name="types">The types to ensure.</param>
         /// <returns>Returns this instance for chaining.</returns>
         /// <exception cref="System.ArgumentException">All the specified types must be search results.</exception>
-        public EntityFrameworkSearchOptions WithSearchResults(params Type[] types)
+        public EntityFrameworkSearchOptions WithSearchResultTypes(params Type[] types)
         {
             Argument.NotNull(types, nameof(types));
 

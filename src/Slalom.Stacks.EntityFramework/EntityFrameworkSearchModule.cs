@@ -1,13 +1,18 @@
 ﻿using System;
 using Autofac;
 using Autofac.Core;
-using Microsoft.Extensions.Configuration;
-using Slalom.Stacks.Configuration;
 using Slalom.Stacks.Reflection;
 using Slalom.Stacks.Search;
 using Slalom.Stacks.Validation;
 
-namespace Slalom.Stacks.Data.EntityFramework
+#if core
+using Slalom.Stacks.Configuration;
+using Microsoft.Extensions.Configuration;
+#else
+using System.Configuration;
+#endif
+
+namespace Slalom.Stacks.EntityFramework
 {
     /// <summary>
     /// An Autofac module for configuring the Entity Framework Search module.
@@ -48,7 +53,8 @@ namespace Slalom.Stacks.Data.EntityFramework
                    .AsSelf()
                    .As<ISearchContext>()
                    .OnActivated(this.OnContextActivated)
-                   .OnPreparing(this.OnContextPreparing);
+                   .OnPreparing(this.OnContextPreparing)
+                   .AllPropertiesAutowired();
 
         }
 
@@ -61,9 +67,35 @@ namespace Slalom.Stacks.Data.EntityFramework
 
         private void OnContextPreparing(PreparingEventArgs e)
         {
+            
+#if !core
+            var connectionString = ConfigurationManager.AppSettings["Stacks:Data:EntityFramework:ConnectionString"];
+            if (!String.IsNullOrWhiteSpace(connectionString))
+            {
+                _options.ConnectionString = connectionString;
+            }
+
+            var autoFind = ConfigurationManager.AppSettings["Stacks:Data:EntityFramework:ConnectionString"];
+            if (!String.IsNullOrWhiteSpace(autoFind))
+            {
+                _options.AutoAddSearchResults = Convert.ToBoolean(autoFind);
+            }
+#else
             var configuration = e.Context.Resolve<IConfiguration>();
-            _options.ConnectionString = configuration.GetOptionalSetting("Stacks:Data:EntityFramework:ConnectionString", _options.ConnectionString);
-            _options.AutoAddSearchResults = Convert.ToBoolean(configuration.GetOptionalSetting("Stacks:Data:EntityFramework:AutoAddSearchResults", "true"));
+
+            var connectionString = configuration["Stacks:Data:EntityFramework:ConnectionString"];
+            if (!String.IsNullOrWhiteSpace(connectionString))
+            {
+                _options.ConnectionString = connectionString;
+            }
+
+            var autoFind = configuration["Stacks:Data:EntityFramework:ConnectionString"];
+            if (!String.IsNullOrWhiteSpace(autoFind))
+            {
+                _options.AutoAddSearchResults = Convert.ToBoolean(autoFind);
+            }
+#endif
+
             if (_options.AutoAddSearchResults)
             {
                 _options.SearchResultTypes = e.Context.Resolve<DiscoveredSearchResultTypes>().Items.Value;

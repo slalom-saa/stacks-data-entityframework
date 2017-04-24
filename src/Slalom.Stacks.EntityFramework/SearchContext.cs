@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Slalom.Stacks.Search;
 using Slalom.Stacks.Validation;
 
-namespace Slalom.Stacks.Data.EntityFramework
+namespace Slalom.Stacks.EntityFramework
 {
     /// <summary>
     /// An Entity Framework <see cref="ISearchContext"/> implementation.

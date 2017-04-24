@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Slalom.Stacks.Data.EntityFramework
+namespace Slalom.Stacks.EntityFramework
 {
     internal class MigrationManager
     {

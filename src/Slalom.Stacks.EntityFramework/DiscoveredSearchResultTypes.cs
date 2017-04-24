@@ -5,7 +5,7 @@ using System.Linq;
 using Slalom.Stacks.Reflection;
 using Slalom.Stacks.Search;
 
-namespace Slalom.Stacks.Data.EntityFramework
+namespace Slalom.Stacks.EntityFramework
 {
     internal class DiscoveredSearchResultTypes
     {
