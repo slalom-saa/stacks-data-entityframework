@@ -44,10 +44,7 @@ namespace ConsoleClient
         {
             using (var stack = new ConsoleStack())
             {
-                stack.UseEntityFrameworkSearch(e =>
-                {
-                    e.WithMigrations();
-                });
+                stack.UseEntityFrameworkSearch();
 
                 stack.Use(e =>
                 {

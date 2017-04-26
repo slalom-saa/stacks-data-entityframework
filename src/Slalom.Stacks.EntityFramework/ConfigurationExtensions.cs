@@ -2,6 +2,7 @@
 using System.Linq;
 using Autofac;
 using Slalom.Stacks.Configuration;
+using Slalom.Stacks.EntityFramework.Search;
 using Slalom.Stacks.Validation;
 
 namespace Slalom.Stacks.EntityFramework
@@ -23,10 +24,11 @@ namespace Slalom.Stacks.EntityFramework
 
             var options = new EntityFrameworkSearchOptions();
             configuration?.Invoke(options);
+            options.Assemblies = instance.Assemblies;
 
             instance.Use(e =>
             {
-                e.RegisterModule(new EntityFrameworkSearchModule(options));
+                e.RegisterModule(new EntityFrameworkSearchModule(instance, options));
             });
 
             return instance;

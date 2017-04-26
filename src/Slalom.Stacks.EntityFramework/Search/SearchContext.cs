@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Data;
+using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using Slalom.Stacks.Reflection;
 using Slalom.Stacks.Search;
 using Slalom.Stacks.Validation;
 
-namespace Slalom.Stacks.EntityFramework
+namespace Slalom.Stacks.EntityFramework.Search
 {
     /// <summary>
     /// An Entity Framework <see cref="ISearchContext"/> implementation.
@@ -22,7 +24,7 @@ namespace Slalom.Stacks.EntityFramework
         /// Initializes a new instance of the <see cref="SearchContext" /> class.
         /// </summary>
         /// <param name="options">The options.</param>
-        public SearchContext(EntityFrameworkSearchOptions options)
+        public SearchContext(EntityFrameworkSearchOptions options) : base(options.ConnectionString)
         {
             Argument.NotNull(options, nameof(options));
 
@@ -163,7 +165,7 @@ namespace Slalom.Stacks.EntityFramework
         /// and have a small set, then you can use the update method.</remarks>
         public Task UpdateAsync<TSearchResult>(TSearchResult[] instances) where TSearchResult : class, ISearchResult
         {
-            this.Set<TSearchResult>().UpdateRange(instances);
+            this.Set<TSearchResult>().AddOrUpdate(instances);
 
             return this.SaveChangesAsync();
         }
@@ -181,27 +183,6 @@ namespace Slalom.Stacks.EntityFramework
             throw new NotSupportedException();
         }
 
-        /// <summary>
-        /// <para>
-        /// Override this method to configure the database (and other options) to be used for this context.
-        /// This method is called for each instance of the context that is created.
-        /// </para>
-        /// <para>
-        /// In situations where an instance of <see cref="T:Microsoft.EntityFrameworkCore.DbContextOptions" /> may or may not have been passed
-        /// to the constructor, you can use <see cref="P:Microsoft.EntityFrameworkCore.DbContextOptionsBuilder.IsConfigured" /> to determine if
-        /// the options have already been set, and skip some or all of the logic in
-        /// <see cref="M:Microsoft.EntityFrameworkCore.DbContext.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)" />.
-        /// </para>
-        /// </summary>
-        /// <param name="optionsBuilder">A builder used to create or modify options for this context. Databases (and other extensions)
-        /// typically define extension methods on this object that allow you to configure the context.</param>
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-
-            optionsBuilder.UseSqlServer(_options.ConnectionString);
-            optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-        }
 
         /// <summary>
         /// Override this method to further configure the model that was discovered by convention from the entity types
@@ -213,14 +194,23 @@ namespace Slalom.Stacks.EntityFramework
         /// to a given database.</param>
         /// <remarks>If a model is explicitly set on the options for this context (via <see cref="M:Microsoft.EntityFrameworkCore.DbContextOptionsBuilder.UseModel(Microsoft.EntityFrameworkCore.Metadata.IModel)" />)
         /// then this method will not be run.</remarks>
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            foreach (var item in _options.SearchResultTypes.ToList())
+            var entityMethod = typeof(DbModelBuilder).GetMethod("Entity");
+
+            foreach (var assembly in _options.Assemblies)
             {
-                modelBuilder.Entity(item)
-                            .HasKey("Id");
+                foreach (var type in assembly.SafelyGetTypes(typeof(ISearchResult)))
+                {
+                    if (type.IsAbstract || type.IsInterface)
+                    {
+                        continue;
+                    }
+                    entityMethod.MakeGenericMethod(type)
+                        .Invoke(modelBuilder, new object[] { });
+                }
             }
         }
     }
