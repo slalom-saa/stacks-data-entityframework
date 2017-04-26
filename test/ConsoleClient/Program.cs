@@ -10,13 +10,12 @@ using Slalom.Stacks.EntityFramework;
 using Slalom.Stacks.Search;
 using Slalom.Stacks.Services.Messaging;
 using Autofac;
+using Slalom.Stacks.Domain;
 
 namespace ConsoleClient
 {
-    public class User
+    public class User : AggregateRoot
     {
-        public Guid Id { get; set; }
-
         public string FirstName { get; set; }
     }
 
@@ -44,14 +43,19 @@ namespace ConsoleClient
         {
             using (var stack = new ConsoleStack())
             {
-                stack.UseEntityFrameworkSearch();
+                stack.UseEntityFramework();
 
-                stack.Use(e =>
-                {
-                    e.RegisterType<UserSearchIndex>().AsSelf().AsImplementedInterfaces().AllPropertiesAutowired();
-                });
+                stack.Domain.Add(new User()).Wait();
 
-                stack.Search.AddAsync(new UserSearchResult {FirstName = "a"}).Wait();
+
+                //stack.UseEntityFrameworkSearch();
+
+                //stack.Use(e =>
+                //{
+                //    e.RegisterType<UserSearchIndex>().AsSelf().AsImplementedInterfaces().AllPropertiesAutowired();
+                //});
+
+                //stack.Search.AddAsync(new UserSearchResult {FirstName = "a"}).Wait();
             }
         }
     }

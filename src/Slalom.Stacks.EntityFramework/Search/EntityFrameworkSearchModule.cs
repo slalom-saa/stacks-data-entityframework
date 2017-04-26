@@ -20,14 +20,14 @@ namespace Slalom.Stacks.EntityFramework.Search
     internal class EntityFrameworkSearchModule : Module
     {
         private readonly Stack _stack;
-        private readonly EntityFrameworkSearchOptions _options;
+        private readonly EntityFrameworkOptions _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityFrameworkSearchModule" /> class.
         /// </summary>
         /// <param name="stack">The configured stack.</param>
         /// <param name="options">The options to use.</param>
-        public EntityFrameworkSearchModule(Stack stack, EntityFrameworkSearchOptions options)
+        public EntityFrameworkSearchModule(Stack stack, EntityFrameworkOptions options)
         {
             Argument.NotNull(options, nameof(options));
 

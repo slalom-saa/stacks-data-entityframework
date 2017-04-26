@@ -18,13 +18,13 @@ namespace Slalom.Stacks.EntityFramework.Search
     /// <seealso cref="Slalom.Stacks.Search.ISearchContext" />
     internal class SearchContext : DbContext, ISearchContext
     {
-        private readonly EntityFrameworkSearchOptions _options;
+        private readonly EntityFrameworkOptions _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SearchContext" /> class.
         /// </summary>
         /// <param name="options">The options.</param>
-        public SearchContext(EntityFrameworkSearchOptions options) : base(options.ConnectionString)
+        public SearchContext(EntityFrameworkOptions options) : base(options.ConnectionString)
         {
             Argument.NotNull(options, nameof(options));
 
