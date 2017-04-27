@@ -11,12 +11,23 @@ using Slalom.Stacks.Search;
 using Slalom.Stacks.Services.Messaging;
 using Autofac;
 using Slalom.Stacks.Domain;
+using Slalom.Stacks.Validation;
 
 namespace ConsoleClient
 {
+    public class Description : ConceptAs<string>
+    {
+        public override IEnumerable<ValidationError> Validate()
+        {
+            yield break;
+        }
+    }
+
     public class User : AggregateRoot
     {
         public string FirstName { get; set; }
+
+        public Description Description { get; set; } = new Description();
     }
 
     public class UserSearchResult : ISearchResult
@@ -44,6 +55,10 @@ namespace ConsoleClient
             using (var stack = new ConsoleStack())
             {
                 stack.UseEntityFramework();
+                stack.UseEntityFrameworkSearch(e =>
+                {
+                    e.WithConnectionString("Data Source=localhost;Initial Catalog=Stacks.Search;Integrated Security=True;MultipleActiveResultSets=True");
+                });
 
                 stack.Domain.Add(new User()).Wait();
 
@@ -55,7 +70,7 @@ namespace ConsoleClient
                 //    e.RegisterType<UserSearchIndex>().AsSelf().AsImplementedInterfaces().AllPropertiesAutowired();
                 //});
 
-                //stack.Search.AddAsync(new UserSearchResult {FirstName = "a"}).Wait();
+                stack.Search.AddAsync(new UserSearchResult { FirstName = "a" }).Wait();
             }
         }
     }

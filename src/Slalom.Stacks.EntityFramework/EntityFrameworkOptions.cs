@@ -9,7 +9,7 @@ namespace Slalom.Stacks.EntityFramework
     /// </summary>
     public class EntityFrameworkOptions
     {
-        internal string ConnectionString { get; set; } = "Data Source=localhost;Initial Catalog=Stacks.Search;Integrated Security=True;MultipleActiveResultSets=True";
+        internal string ConnectionString { get; set; } = "Data Source=localhost;Initial Catalog=Stacks;Integrated Security=True;MultipleActiveResultSets=True";
 
         internal IEnumerable<Assembly> Assemblies { get; set; }   
 

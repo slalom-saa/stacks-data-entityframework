@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Inflector;
 using Slalom.Stacks.Reflection;
 using Slalom.Stacks.Search;
 using Slalom.Stacks.Validation;
@@ -18,6 +19,11 @@ namespace Slalom.Stacks.EntityFramework.Search
     /// <seealso cref="Slalom.Stacks.Search.ISearchContext" />
     internal class SearchContext : DbContext, ISearchContext
     {
+        static SearchContext()
+        {
+            Database.SetInitializer<SearchContext>(new DropCreateDatabaseIfModelChanges<SearchContext>());
+        }
+
         private readonly EntityFrameworkOptions _options;
 
         /// <summary>
@@ -50,7 +56,7 @@ namespace Slalom.Stacks.EntityFramework.Search
 
                 using (var copy = new SqlBulkCopy(connection))
                 {
-                    copy.DestinationTableName = string.Format(typeof(TSearchResult).Name);
+                    copy.DestinationTableName = string.Format(typeof(TSearchResult).Name.Pluralize());
                     foreach (var column in table.Columns)
                     {
                         var columnName = ((DataColumn)column).ColumnName;
@@ -208,6 +214,7 @@ namespace Slalom.Stacks.EntityFramework.Search
                     {
                         continue;
                     }
+
                     entityMethod.MakeGenericMethod(type)
                         .Invoke(modelBuilder, new object[] { });
                 }

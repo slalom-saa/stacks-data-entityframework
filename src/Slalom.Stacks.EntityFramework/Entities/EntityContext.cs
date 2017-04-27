@@ -13,6 +13,11 @@ namespace Slalom.Stacks.EntityFramework.Entities
 {
     public class EntityContext : DbContext, IEntityContext
     {
+        static EntityContext()
+        {
+            Database.SetInitializer<EntityContext>(new DropCreateDatabaseIfModelChanges<EntityContext>());
+        }
+
 
         private readonly Assembly[] _assemblies;
 
