@@ -1,4 +1,11 @@
-﻿using System;
+﻿/* 
+ * Copyright (c) Stacks Contributors
+ * 
+ * This file is subject to the terms and conditions defined in
+ * the LICENSE file, which is part of this source code package.
+ */
+
+using System;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
@@ -14,23 +21,23 @@ using Slalom.Stacks.Validation;
 namespace Slalom.Stacks.EntityFramework.Search
 {
     /// <summary>
-    /// An Entity Framework <see cref="ISearchContext"/> implementation.
+    /// An Entity Framework <see cref="ISearchContext" /> implementation.
     /// </summary>
     /// <seealso cref="Slalom.Stacks.Search.ISearchContext" />
     internal class SearchContext : DbContext, ISearchContext
     {
+        private readonly EntityFrameworkOptions _options;
+
         static SearchContext()
         {
-            Database.SetInitializer<SearchContext>(new DropCreateDatabaseIfModelChanges<SearchContext>());
+            Database.SetInitializer(new DropCreateDatabaseIfModelChanges<SearchContext>());
         }
-
-        private readonly EntityFrameworkOptions _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SearchContext" /> class.
         /// </summary>
         /// <param name="options">The options.</param>
-        public SearchContext(EntityFrameworkOptions options) : base(options.ConnectionString)
+        public SearchContext(EntityFrameworkOptions options) : base(options.Search.ConnectionString)
         {
             Argument.NotNull(options, nameof(options));
 
@@ -44,13 +51,15 @@ namespace Slalom.Stacks.EntityFramework.Search
         /// <typeparam name="TSearchResult">The type of instance to add.</typeparam>
         /// <param name="instances">The instances to add.</param>
         /// <returns>A task for asynchronous programming.</returns>
-        /// <remarks>This allows for performance gain in larger data sets.  If you are unsure
-        /// and have a small set, then you can use the update method.</remarks>
+        /// <remarks>
+        /// This allows for performance gain in larger data sets.  If you are unsure
+        /// and have a small set, then you can use the update method.
+        /// </remarks>
         public async Task AddAsync<TSearchResult>(TSearchResult[] instances) where TSearchResult : class, ISearchResult
         {
             var table = CreateDataTable(instances);
 
-            using (var connection = new SqlConnection(_options.ConnectionString))
+            using (var connection = new SqlConnection(_options.Search.ConnectionString))
             {
                 connection.Open();
 
@@ -59,7 +68,7 @@ namespace Slalom.Stacks.EntityFramework.Search
                     copy.DestinationTableName = string.Format(typeof(TSearchResult).Name.Pluralize());
                     foreach (var column in table.Columns)
                     {
-                        var columnName = ((DataColumn)column).ColumnName;
+                        var columnName = ((DataColumn) column).ColumnName;
                         var mapping = new SqlBulkCopyColumnMapping(columnName, columnName);
                         copy.ColumnMappings.Add(mapping);
                     }
@@ -76,7 +85,7 @@ namespace Slalom.Stacks.EntityFramework.Search
         /// <returns>A task for asynchronous programming.</returns>
         public async Task ClearAsync<TSearchResult>() where TSearchResult : class, ISearchResult
         {
-            using (var connection = new SqlConnection(_options.ConnectionString))
+            using (var connection = new SqlConnection(_options.Search.ConnectionString))
             {
                 connection.Open();
 
@@ -85,31 +94,6 @@ namespace Slalom.Stacks.EntityFramework.Search
                     await command.ExecuteNonQueryAsync();
                 }
             }
-        }
-
-        public static DataTable CreateDataTable<T>(params T[] items) where T : ISearchResult
-        {
-            var type = typeof(T);
-            var properties = type.GetProperties();
-
-            var dataTable = new DataTable();
-            foreach (var info in properties)
-            {
-                dataTable.Columns.Add(new DataColumn(info.Name, Nullable.GetUnderlyingType(info.PropertyType) ?? info.PropertyType));
-            }
-
-            foreach (var entity in items)
-            {
-                var values = new object[properties.Length];
-                for (var i = 0; i < properties.Length; i++)
-                {
-                    values[i] = properties[i].GetValue(entity);
-                }
-
-                dataTable.Rows.Add(values);
-            }
-
-            return dataTable;
         }
 
         /// <summary>
@@ -167,8 +151,10 @@ namespace Slalom.Stacks.EntityFramework.Search
         /// <typeparam name="TSearchResult">The type of instance.</typeparam>
         /// <param name="instances">The instances to update.</param>
         /// <returns>A task for asynchronous programming.</returns>
-        /// <remarks>This allows for performance gain in larger data sets.  If you are unsure
-        /// and have a small set, then you can use the update method.</remarks>
+        /// <remarks>
+        /// This allows for performance gain in larger data sets.  If you are unsure
+        /// and have a small set, then you can use the update method.
+        /// </remarks>
         public Task UpdateAsync<TSearchResult>(TSearchResult[] instances) where TSearchResult : class, ISearchResult
         {
             this.Set<TSearchResult>().AddOrUpdate(instances);
@@ -189,17 +175,46 @@ namespace Slalom.Stacks.EntityFramework.Search
             throw new NotSupportedException();
         }
 
+        public static DataTable CreateDataTable<T>(params T[] items) where T : ISearchResult
+        {
+            var type = typeof(T);
+            var properties = type.GetProperties();
+
+            var dataTable = new DataTable();
+            foreach (var info in properties)
+            {
+                dataTable.Columns.Add(new DataColumn(info.Name, Nullable.GetUnderlyingType(info.PropertyType) ?? info.PropertyType));
+            }
+
+            foreach (var entity in items)
+            {
+                var values = new object[properties.Length];
+                for (var i = 0; i < properties.Length; i++)
+                {
+                    values[i] = properties[i].GetValue(entity);
+                }
+
+                dataTable.Rows.Add(values);
+            }
+
+            return dataTable;
+        }
+
 
         /// <summary>
         /// Override this method to further configure the model that was discovered by convention from the entity types
         /// exposed in <see cref="T:Microsoft.EntityFrameworkCore.DbSet`1" /> properties on your derived context. The resulting model may be cached
         /// and re-used for subsequent instances of your derived context.
         /// </summary>
-        /// <param name="modelBuilder">The builder being used to construct the model for this context. Databases (and other extensions) typically
+        /// <param name="modelBuilder">
+        /// The builder being used to construct the model for this context. Databases (and other extensions) typically
         /// define extension methods on this object that allow you to configure aspects of the model that are specific
-        /// to a given database.</param>
-        /// <remarks>If a model is explicitly set on the options for this context (via <see cref="M:Microsoft.EntityFrameworkCore.DbContextOptionsBuilder.UseModel(Microsoft.EntityFrameworkCore.Metadata.IModel)" />)
-        /// then this method will not be run.</remarks>
+        /// to a given database.
+        /// </param>
+        /// <remarks>
+        /// If a model is explicitly set on the options for this context (via <see cref="M:Microsoft.EntityFrameworkCore.DbContextOptionsBuilder.UseModel(Microsoft.EntityFrameworkCore.Metadata.IModel)" />)
+        /// then this method will not be run.
+        /// </remarks>
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

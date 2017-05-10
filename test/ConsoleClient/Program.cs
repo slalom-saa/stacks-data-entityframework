@@ -11,6 +11,7 @@ using Slalom.Stacks.Search;
 using Slalom.Stacks.Services.Messaging;
 using Autofac;
 using Slalom.Stacks.Domain;
+using Slalom.Stacks.Text;
 using Slalom.Stacks.Validation;
 
 namespace ConsoleClient
@@ -52,25 +53,12 @@ namespace ConsoleClient
     {
         public static void Main(string[] args)
         {
-            using (var stack = new ConsoleStack())
+            using (var stack = new Stack())
             {
                 stack.UseEntityFramework();
-                stack.UseEntityFrameworkSearch(e =>
-                {
-                    e.WithConnectionString("Data Source=localhost;Initial Catalog=Stacks.Search;Integrated Security=True;MultipleActiveResultSets=True");
-                });
+                stack.UseEntityFrameworkSearch();
 
                 stack.Domain.Add(new User()).Wait();
-
-
-                //stack.UseEntityFrameworkSearch();
-
-                //stack.Use(e =>
-                //{
-                //    e.RegisterType<UserSearchIndex>().AsSelf().AsImplementedInterfaces().AllPropertiesAutowired();
-                //});
-
-                stack.Search.AddAsync(new UserSearchResult { FirstName = "a" }).Wait();
             }
         }
     }

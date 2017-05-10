@@ -1,15 +1,18 @@
-﻿using System.Data.Entity;
-using System.Linq;
-using System.Reflection;
+﻿/* 
+ * Copyright (c) Stacks Contributors
+ * 
+ * This file is subject to the terms and conditions defined in
+ * the LICENSE file, which is part of this source code package.
+ */
+
 using Autofac;
-using Module = Autofac.Module;
 
 namespace Slalom.Stacks.EntityFramework.Entities
 {
     public class EntityFrameworkEntitiesModule : Module
     {
-        private readonly Stack _stack;
         private readonly EntityFrameworkOptions _options;
+        private readonly Stack _stack;
 
         public EntityFrameworkEntitiesModule(Stack stack, EntityFrameworkOptions options)
         {

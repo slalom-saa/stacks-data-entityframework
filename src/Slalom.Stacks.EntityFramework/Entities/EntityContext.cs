@@ -1,4 +1,11 @@
-﻿using System;
+﻿/* 
+ * Copyright (c) Stacks Contributors
+ * 
+ * This file is subject to the terms and conditions defined in
+ * the LICENSE file, which is part of this source code package.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
@@ -13,37 +20,16 @@ namespace Slalom.Stacks.EntityFramework.Entities
 {
     public class EntityContext : DbContext, IEntityContext
     {
-        static EntityContext()
-        {
-            Database.SetInitializer<EntityContext>(new DropCreateDatabaseIfModelChanges<EntityContext>());
-        }
-
-
         private readonly Assembly[] _assemblies;
 
-        public EntityContext(EntityFrameworkOptions options) : base(options.ConnectionString)
+        static EntityContext()
         {
-            _assemblies = options.Assemblies.ToArray();
+            Database.SetInitializer(new DropCreateDatabaseIfModelChanges<EntityContext>());
         }
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        public EntityContext(EntityFrameworkOptions options) : base(options.Data.ConnectionString)
         {
-            base.OnModelCreating(modelBuilder);
-
-            var entityMethod = typeof(DbModelBuilder).GetMethod("Entity");
-
-            foreach (var assembly in _assemblies)
-            {
-                foreach (var type in assembly.SafelyGetTypes(typeof(IAggregateRoot)))
-                {
-                    if (type.IsAbstract || type.IsInterface)
-                    {
-                        continue;
-                    }
-                    entityMethod.MakeGenericMethod(type)
-                        .Invoke(modelBuilder, new object[] { });
-                }
-            }
+            _assemblies = options.Assemblies.ToArray();
         }
 
 
@@ -66,14 +52,14 @@ namespace Slalom.Stacks.EntityFramework.Entities
         {
             var set = this.Set<TEntity>();
 
-            return QueryableExtensions.AnyAsync(set, expression);
+            return set.AnyAsync(expression);
         }
 
         public Task<bool> Exists<TEntity>(string id) where TEntity : class, IAggregateRoot
         {
             var set = this.Set<TEntity>();
 
-            return QueryableExtensions.AnyAsync<TEntity>(set, e => e.Id == id);
+            return set.AnyAsync(e => e.Id == id);
         }
 
         public Task<TEntity> Find<TEntity>(string id) where TEntity : class, IAggregateRoot
@@ -87,7 +73,7 @@ namespace Slalom.Stacks.EntityFramework.Entities
         {
             var set = this.Set<TEntity>();
 
-            var result =  await Queryable.Where(set, expression).ToListAsync();
+            var result = await set.Where(expression).ToListAsync();
 
             return result;
         }
@@ -96,7 +82,7 @@ namespace Slalom.Stacks.EntityFramework.Entities
         {
             var set = this.Set<TEntity>();
 
-            var result = await QueryableExtensions.ToListAsync<TEntity>(set);
+            var result = await set.ToListAsync();
 
             return result;
         }
@@ -106,16 +92,36 @@ namespace Slalom.Stacks.EntityFramework.Entities
             var ids = instances.Select(e => e.Id).ToList();
 
             var set = this.Set<TEntity>();
-            set.RemoveRange(Queryable.Where<TEntity>(set, e => ids.Contains(e.Id)));
+            set.RemoveRange(set.Where(e => ids.Contains(e.Id)));
 
             return this.SaveChangesAsync();
         }
 
         public Task Update<TEntity>(TEntity[] instances) where TEntity : class, IAggregateRoot
         {
-            DbSetMigrationsExtensions.AddOrUpdate(this.Set<TEntity>(), instances);
+            this.Set<TEntity>().AddOrUpdate(instances);
 
             return this.SaveChangesAsync();
+        }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            var entityMethod = typeof(DbModelBuilder).GetMethod("Entity");
+
+            foreach (var assembly in _assemblies)
+            {
+                foreach (var type in assembly.SafelyGetTypes(typeof(IAggregateRoot)))
+                {
+                    if (type.IsAbstract || type.IsInterface)
+                    {
+                        continue;
+                    }
+                    entityMethod.MakeGenericMethod(type)
+                        .Invoke(modelBuilder, new object[] { });
+                }
+            }
         }
     }
 }
