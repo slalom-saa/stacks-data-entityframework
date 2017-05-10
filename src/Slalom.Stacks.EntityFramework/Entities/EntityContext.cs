@@ -22,11 +22,6 @@ namespace Slalom.Stacks.EntityFramework.Entities
     {
         private readonly Assembly[] _assemblies;
 
-        static EntityContext()
-        {
-            Database.SetInitializer(new DropCreateDatabaseIfModelChanges<EntityContext>());
-        }
-
         public EntityContext(EntityFrameworkOptions options) : base(options.Data.ConnectionString)
         {
             _assemblies = options.Assemblies.ToArray();

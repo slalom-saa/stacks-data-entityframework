@@ -5,6 +5,7 @@
  * the LICENSE file, which is part of this source code package.
  */
 
+using System.Data.Entity;
 using Autofac;
 
 namespace Slalom.Stacks.EntityFramework.Entities
@@ -24,7 +25,13 @@ namespace Slalom.Stacks.EntityFramework.Entities
         {
             base.Load(builder);
 
-            builder.Register(c => new EntityContext(_options)).AsImplementedInterfaces();
+            builder.Register(c => new EntityContext(_options))
+                .AsImplementedInterfaces();
+
+            if (_options.Data.EnableMigrations)
+            {
+                Database.SetInitializer(new DropCreateDatabaseIfModelChanges<EntityContext>());
+            }
         }
     }
 }

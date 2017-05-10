@@ -4,7 +4,7 @@
 #>
 param (
     $Configuration = "DEBUG",
-    $IncrementVersion = $true
+    $IncrementVersion = $false
 )
 
 function Increment-Version() {
@@ -40,12 +40,38 @@ function Format-Json([Parameter(Mandatory, ValueFromPipeline)][String] $json) {
   }) -Join "`n"
 }
 
+function Clear-LocalCache() {
+    $paths = nuget locals all -list
+    foreach($path in $paths) {
+        $path = $path.Substring($path.IndexOf(' ')).Trim()
+
+        if (Test-Path $path) {
+
+            Push-Location $path
+
+            foreach($item in Get-ChildItem -Filter "*Slalom.Stacks.EntityFramework*" -Recurse) {
+                  if (Test-Path $item.FullName) {
+                    Remove-Item $item.FullName -Recurse -Force
+                    Write-Host "Removing $item"
+                }
+            }
+
+
+            Pop-Location
+    
+        }
+    }
+}
+
 function Go ($Path) {
     Push-Location $Path
 
     Remove-Item .\Bin -Force -Recurse
     if ($IncrementVersion) {
         Increment-Version
+    }
+    else{
+        Clear-LocalCache
     }
     dotnet build
     dotnet pack --no-build --configuration $Configuration
