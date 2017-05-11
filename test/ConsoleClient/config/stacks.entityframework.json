@@ -1,0 +1,9 @@
+﻿{
+  "Stacks": {
+    "EntityFramework": {
+      "Data": {
+        "EnableMigrations": false
+      }
+    }
+  }
+}
