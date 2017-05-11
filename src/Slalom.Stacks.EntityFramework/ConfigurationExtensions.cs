@@ -31,6 +31,7 @@ namespace Slalom.Stacks.EntityFramework
 
             var options = new EntityFrameworkOptions();
             configuration?.Invoke(options.Data);
+            instance.Configuration.GetSection("Stacks:EntityFramework").Bind(options);
             options.Assemblies = instance.Assemblies;
 
             instance.Use(e => { e.RegisterModule(new EntityFrameworkEntitiesModule(instance, options)); });

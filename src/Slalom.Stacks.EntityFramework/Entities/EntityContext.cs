@@ -25,6 +25,13 @@ namespace Slalom.Stacks.EntityFramework.Entities
         public EntityContext(EntityFrameworkOptions options) : base(options.Data.ConnectionString)
         {
             _assemblies = options.Assemblies.ToArray();
+
+
+            // TODO: change to options
+            this.Configuration.AutoDetectChangesEnabled = false;
+            this.Configuration.LazyLoadingEnabled = false;
+            this.Configuration.ProxyCreationEnabled = false;
+            this.Configuration.ValidateOnSaveEnabled = false;
         }
 
 
@@ -68,7 +75,7 @@ namespace Slalom.Stacks.EntityFramework.Entities
         {
             var set = this.Set<TEntity>();
 
-            var result = await set.Where(expression).ToListAsync();
+            var result = await set.Where(expression).AsNoTracking().ToListAsync();
 
             return result;
         }

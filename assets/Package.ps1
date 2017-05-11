@@ -1,10 +1,11 @@
 ﻿<#
 .SYNOPSIS
-    Packages the Stacks Entity Framework NuGet packages.
+    Packages the Entity Framework NuGet packages.
 #>
 param (
     $Configuration = "DEBUG",
-    $IncrementVersion = $false
+    $IncrementVersion = $false,
+    $Packages = @("Slalom.Stacks.EntityFramework")
 )
 
 function Increment-Version() {
@@ -27,7 +28,7 @@ function Format-Json([Parameter(Mandatory, ValueFromPipeline)][String] $json) {
   $indent = 0;
   ($json -Split '\n' |
     % {
-      if ($_ -match '[\}\]]') {
+      if ($_ -match '[\}\]]') { 
         # This line contains  ] or }, decrement the indentation level
         $indent--
       }
@@ -49,16 +50,17 @@ function Clear-LocalCache() {
 
             Push-Location $path
 
-            foreach($item in Get-ChildItem -Filter "*Slalom.Stacks.EntityFramework*" -Recurse) {
-                  if (Test-Path $item.FullName) {
-                    Remove-Item $item.FullName -Recurse -Force
-                    Write-Host "Removing $item"
+            foreach($package in $Packages) {
+
+                foreach($item in Get-ChildItem -Filter "$package" -Recurse) {
+                    if (Test-Path $item) {
+                        Remove-Item $item.FullName -Recurse -Force
+                        Write-Host "Removing $item"
+                    }
                 }
             }
 
-
             Pop-Location
-    
         }
     }
 }
@@ -70,7 +72,7 @@ function Go ($Path) {
     if ($IncrementVersion) {
         Increment-Version
     }
-    else{
+    else {
         Clear-LocalCache
     }
     dotnet build
@@ -82,7 +84,9 @@ function Go ($Path) {
 
 Push-Location $PSScriptRoot
 
-Go ..\src\Slalom.Stacks.EntityFramework
+foreach($package in $Packages) {
+    Go "..\src\$package"
+}
 
 Pop-Location
 
