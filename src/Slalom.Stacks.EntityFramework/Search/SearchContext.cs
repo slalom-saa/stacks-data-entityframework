@@ -89,7 +89,7 @@ namespace Slalom.Stacks.EntityFramework.Search
             {
                 connection.Open();
 
-                using (var command = new SqlCommand("DELETE FROM [" + typeof(TSearchResult).Name + "]", connection))
+                using (var command = new SqlCommand("DELETE FROM [" + typeof(TSearchResult).Name.Pluralize() + "]", connection))
                 {
                     await command.ExecuteNonQueryAsync();
                 }
