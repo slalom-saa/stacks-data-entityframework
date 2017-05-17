@@ -34,6 +34,8 @@ namespace Slalom.Stacks.EntityFramework
             instance.Configuration.GetSection("Stacks:EntityFramework").Bind(options);
             options.Assemblies = instance.Assemblies;
 
+            instance.Include(typeof(EntityContext));
+
             instance.Use(e => { e.RegisterModule(new EntityFrameworkEntitiesModule(instance, options)); });
             return instance;
         }
@@ -52,6 +54,8 @@ namespace Slalom.Stacks.EntityFramework
             configuration?.Invoke(options.Search);
             instance.Configuration.GetSection("Stacks:EntityFramework").Bind(options);
             options.Assemblies = instance.Assemblies;
+
+            instance.Include(typeof(SearchContext));
 
             instance.Use(e => { e.RegisterModule(new EntityFrameworkSearchModule(instance, options)); });
 
