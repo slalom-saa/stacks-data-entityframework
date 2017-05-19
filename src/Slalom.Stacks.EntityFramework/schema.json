@@ -37,6 +37,13 @@
               "additionalProperties": true,
               "id": "/properties/Stacks/properties/EntityFramework/properties/Search",
               "properties": {
+                "EnableMigrations": {
+                  "default": false,
+                  "description": "Indicates whether or not EF code first migrations should apply.",
+                  "id": "/properties/Stacks/properties/EntityFramework/properties/Data/properties/ConnectionString",
+                  "title": "Enable Migrations",
+                  "type": "boolean"
+                },
                 "ConnectionString": {
                   "default": "Data Source=.;Initial Catalog=Stacks.Search;Integrated Security=True;MultipleActiveResultSets=True",
                   "description": "The connection string for search.",
