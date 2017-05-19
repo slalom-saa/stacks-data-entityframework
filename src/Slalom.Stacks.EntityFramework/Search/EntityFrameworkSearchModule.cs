@@ -51,7 +51,7 @@ namespace Slalom.Stacks.EntityFramework.Search
                 .As<ISearchContext>()
                 .AllPropertiesAutowired();
 
-            if (_options.Data.EnableMigrations)
+            if (_options.Search.EnableMigrations)
             {
                 Database.SetInitializer(new DropCreateDatabaseIfModelChanges<SearchContext>());
             }
