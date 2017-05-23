@@ -5,6 +5,7 @@
  * the LICENSE file, which is part of this source code package.
  */
 
+using System.Data.Entity;
 using Autofac;
 using Slalom.Stacks.Search;
 using Slalom.Stacks.Validation;
@@ -49,6 +50,11 @@ namespace Slalom.Stacks.EntityFramework.Search
                 .AsSelf()
                 .As<ISearchContext>()
                 .AllPropertiesAutowired();
+
+            if (_options.Search.EnableMigrations)
+            {
+                Database.SetInitializer(new DropCreateDatabaseIfModelChanges<SearchContext>());
+            }
         }
     }
 }
