@@ -8,13 +8,13 @@
 using Microsoft.Extensions.Configuration;
 using Slalom.Stacks.Services;
 
-namespace Slalom.Stacks.EntityFramework.EndPoints
+namespace Slalom.Stacks.EntityFramework.EndPoints.GetConfiguration
 {
     /// <summary>
-    /// Gets the Entity Framework configuration.
+    /// Gets the current Entity Framework configuration.
     /// </summary>
-    [EndPoint("_system/configuration/entity-framework")]
-    public class GetConfiguration : EndPoint
+    [EndPoint("_system/configuration/entity-framework", Method = "GET", Name = "Get Entity Framework Configuration", Public = false)]
+    public class GetConfiguration : EndPoint<GetConfigurationRequest, EntityFrameworkOptions>
     {
         private readonly IConfiguration _configuration;
 
@@ -28,11 +28,12 @@ namespace Slalom.Stacks.EntityFramework.EndPoints
         }
 
         /// <inheritdoc />
-        public override void Receive()
+        public override EntityFrameworkOptions Receive(GetConfigurationRequest instance)
         {
             var options = new EntityFrameworkOptions();
             _configuration.GetSection("Stacks:EntityFramework").Bind(options);
-            this.Respond(options);
+
+            return options;
         }
     }
 }
