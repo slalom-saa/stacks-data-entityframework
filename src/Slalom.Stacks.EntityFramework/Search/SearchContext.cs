@@ -28,11 +28,6 @@ namespace Slalom.Stacks.EntityFramework.Search
     {
         private readonly EntityFrameworkOptions _options;
 
-        static SearchContext()
-        {
-            Database.SetInitializer(new DropCreateDatabaseIfModelChanges<SearchContext>());
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SearchContext" /> class.
         /// </summary>
