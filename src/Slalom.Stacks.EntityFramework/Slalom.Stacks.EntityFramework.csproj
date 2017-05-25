@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <VersionPrefix>1.8.16</VersionPrefix>
+    <Authors>Stacks Contributors</Authors>
+    <TargetFramework>net461</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AssemblyName>Slalom.Stacks.EntityFramework</AssemblyName>
+    <PackageId>Slalom.Stacks.EntityFramework</PackageId>
+    <PackageTags>slalom;stacks;entityframework</PackageTags>
+    <PackageProjectUrl>https://github.com/slalom-saa/stacks</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/slalom-saa/stacks/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <Version>1.9.2</Version>
+    <Description />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.1.3" />
+    <PackageReference Include="Inflector" Version="1.0.0" />
+    <PackageReference Include="Slalom.Stacks" Version="1.9.2" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+</Project>
