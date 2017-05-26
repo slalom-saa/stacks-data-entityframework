@@ -15,14 +15,14 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <Version>1.9.2</Version>
-    <Description />
+    <Version>1.9.3</Version>
+    <Description>Contains components to map and persist domain objects and search results to SQL Server using Entity Framework.</Description>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="EntityFramework" Version="6.1.3" />
     <PackageReference Include="Inflector" Version="1.0.0" />
-    <PackageReference Include="Slalom.Stacks" Version="1.9.2" />
+    <PackageReference Include="Slalom.Stacks" Version="1.9.3" />
     <PackageReference Include="System.Data.SqlClient" Version="4.3.0" />
   </ItemGroup>
 
