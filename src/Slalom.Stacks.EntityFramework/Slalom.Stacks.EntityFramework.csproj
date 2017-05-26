@@ -16,7 +16,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <Version>1.9.3</Version>
-    <Description />
+    <Description>Contains components to map and persist domain objects and search results to SQL Server using Entity Framework.</Description>
   </PropertyGroup>
 
   <ItemGroup>
