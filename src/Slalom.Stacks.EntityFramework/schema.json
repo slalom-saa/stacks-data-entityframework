@@ -1,61 +1,55 @@
 ﻿{
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "additionalProperties": true,
-  "definitions": {},
-  "id": "http://example.com/example.json",
-  "properties": {
-    "Stacks": {
-      "additionalProperties": true,
-      "id": "/properties/Stacks",
+  "definitions": {
+    "entityFramework": {
+      "description": "Options for Entity Framework.",
+      "type": "object",
       "properties": {
-        "EntityFramework": {
-          "additionalProperties": true,
-          "id": "/properties/Stacks/properties/EntityFramework",
+        "data": {
+          "description": "Settings for Entity Framework domain data.",
           "properties": {
-            "Data": {
-              "additionalProperties": true,
-              "id": "/properties/Stacks/properties/EntityFramework/properties/Data",
-              "properties": {
-                "EnableMigrations": {
-                  "default": false,
-                  "description": "Indicates whether or not EF code first migrations should apply.",
-                  "id": "/properties/Stacks/properties/EntityFramework/properties/Data/properties/ConnectionString",
-                  "title": "Enable Migrations",
-                  "type": "boolean"
-                },
-                "ConnectionString": {
-                  "default": "Data Source=.;Initial Catalog=Stacks;Integrated Security=True;MultipleActiveResultSets=True",
-                  "description": "The connection string for entities and aggregates.",
-                  "id": "/properties/Stacks/properties/EntityFramework/properties/Data/properties/ConnectionString",
-                  "title": "Data Connection String",
-                  "type": "string"
-                }
-              },
-              "type": "object"
+            "enableMigrations": {
+              "default": false,
+              "description": "Indicates whether or not EF code first migrations should apply.",
+              "title": "Enable Migrations",
+              "type": "boolean"
             },
-            "Search": {
-              "additionalProperties": true,
-              "id": "/properties/Stacks/properties/EntityFramework/properties/Search",
-              "properties": {
-                "EnableMigrations": {
-                  "default": false,
-                  "description": "Indicates whether or not EF code first migrations should apply.",
-                  "id": "/properties/Stacks/properties/EntityFramework/properties/Data/properties/ConnectionString",
-                  "title": "Enable Migrations",
-                  "type": "boolean"
-                },
-                "ConnectionString": {
-                  "default": "Data Source=.;Initial Catalog=Stacks.Search;Integrated Security=True;MultipleActiveResultSets=True",
-                  "description": "The connection string for search.",
-                  "id": "/properties/Stacks/properties/EntityFramework/properties/Search/properties/ConnectionString",
-                  "title": "Search  Connection String",
-                  "type": "string"
-                }
-              },
-              "type": "object"
+            "connectionString": {
+              "default": "Data Source=.;Initial Catalog=Stacks;Integrated Security=True;MultipleActiveResultSets=True",
+              "description": "The connection string for entities and aggregates.",
+              "title": "Data Connection String",
+              "type": "string"
             }
           },
           "type": "object"
+        },
+        "search": {
+          "description": "Settings for Entity Framework search.",
+          "properties": {
+            "enableMigrations": {
+              "default": false,
+              "description": "Indicates whether or not EF code first migrations should apply.",
+              "title": "Enable Migrations",
+              "type": "boolean"
+            },
+            "connectionString": {
+              "default": "Data Source=.;Initial Catalog=Stacks.Search;Integrated Security=True;MultipleActiveResultSets=True",
+              "description": "The connection string for search.",
+              "title": "Search  Connection String",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      }
+    }
+  },
+  "properties": {
+    "stacks": {
+      "description": "The root configuraiton object for Stacks.",
+      "properties": {
+        "entityFramework": {
+          "$ref": "#/definitions/entityFramework"
         }
       },
       "type": "object"
